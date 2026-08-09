@@ -1,0 +1,596 @@
+<div id="blender-checklist-root"></div>
+<style>
+  #blender-checklist-root {
+    --purple: #5B3A8E;
+    --purple-dark: #3B2760;
+    --teal: #1F8A87;
+    --gold: #C9A227;
+    --cream: #FBF9F5;
+    --ink: #2B2438;
+    --grey: #6E6A78;
+    font-family: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: var(--ink);
+    background: var(--cream);
+    border-radius: 20px;
+    max-width: 760px;
+    margin: 0 auto;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(43,36,56,0.08);
+  }
+
+  .bc-hero {
+    background: linear-gradient(135deg, var(--purple-dark), #4A3170);
+    color: #fff;
+    padding: 28px 28px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .bc-hero::after {
+    content: "";
+    position: absolute;
+    top: -60px; right: -40px;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    background: rgba(201,162,39,0.18);
+  }
+  .bc-lang-toggle {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    display: flex;
+    background: rgba(255,255,255,0.12);
+    border-radius: 999px;
+    padding: 3px;
+    gap: 2px;
+    z-index: 2;
+  }
+  .bc-lang-btn {
+    border: none;
+    background: transparent;
+    color: #D9CFEE;
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 5px 11px;
+    border-radius: 999px;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+  }
+  .bc-lang-btn.active {
+    background: var(--gold);
+    color: var(--purple-dark);
+  }
+  .bc-eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--gold);
+    margin: 0 0 6px;
+    position: relative;
+  }
+  .bc-title {
+    font-size: 24px;
+    font-weight: 800;
+    margin: 0 0 4px;
+    position: relative;
+    padding-right: 90px;
+  }
+  .bc-sub {
+    font-size: 13px;
+    color: #D9CFEE;
+    margin: 0 0 20px;
+    position: relative;
+    max-width: 480px;
+  }
+  .bc-progress-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    position: relative;
+  }
+  .bc-progress-track {
+    flex: 1;
+    height: 10px;
+    background: rgba(255,255,255,0.14);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .bc-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--teal), var(--gold));
+    border-radius: 999px;
+    transition: width 0.4s ease;
+  }
+  .bc-progress-label {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
+    min-width: 70px;
+    text-align: right;
+  }
+
+  .bc-body { padding: 10px 20px 22px; }
+
+  .bc-section {
+    border: 1px solid #E8E2D8;
+    background: #fff;
+    border-radius: 14px;
+    margin-top: 14px;
+    overflow: hidden;
+  }
+  .bc-section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 14px 16px;
+    cursor: pointer;
+    user-select: none;
+    background: #fff;
+    border-left: 5px solid var(--accent, var(--purple));
+  }
+  .bc-section-head:hover { background: #FBF9F5; }
+  .bc-section-titlewrap { display: flex; flex-direction: column; gap: 2px; }
+  .bc-section-eyebrow {
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--accent, var(--purple));
+  }
+  .bc-section-title {
+    font-size: 15.5px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .bc-section-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .bc-count {
+    font-size: 11.5px;
+    color: var(--grey);
+    white-space: nowrap;
+    min-width: 34px;
+    text-align: right;
+  }
+  .bc-chevron {
+    width: 18px; height: 18px;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+    color: var(--grey);
+  }
+  .bc-section.open .bc-chevron { transform: rotate(180deg); }
+
+  .bc-items {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.25s ease;
+  }
+  .bc-section.open .bc-items { max-height: 2200px; }
+
+  .bc-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 10px 16px 0;
+    padding: 9px 12px;
+    background: rgba(31,138,135,0.08);
+    border: 1px solid rgba(31,138,135,0.35);
+    border-radius: 10px;
+    font-size: 11.8px;
+    line-height: 1.35;
+    color: var(--ink);
+  }
+  .bc-note strong { color: var(--teal); }
+
+  .bc-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    padding: 10px 16px 10px 20px;
+    border-top: 1px solid #F1EDE3;
+  }
+  .bc-checkbox {
+    margin-top: 2px;
+    width: 19px; height: 19px;
+    flex-shrink: 0;
+    border-radius: 6px;
+    border: 2px solid #D7CFE6;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  .bc-checkbox.checked {
+    background: var(--accent, var(--purple));
+    border-color: var(--accent, var(--purple));
+  }
+  .bc-checkbox svg { width: 12px; height: 12px; opacity: 0; }
+  .bc-checkbox.checked svg { opacity: 1; }
+  .bc-item-textwrap { cursor: pointer; }
+  .bc-item-text {
+    font-size: 13.3px;
+    line-height: 1.4;
+    color: var(--ink);
+  }
+  .bc-item-hint {
+    font-size: 11.5px;
+    line-height: 1.3;
+    color: var(--accent, var(--purple));
+    margin-top: 3px;
+    opacity: 0.85;
+  }
+  .bc-item-hint::before {
+    content: "📍 ";
+  }
+  .bc-item.done .bc-item-text {
+    color: var(--grey);
+    text-decoration: line-through;
+    text-decoration-color: #C9BFDD;
+  }
+  .bc-item.done .bc-item-hint { opacity: 0.4; }
+
+  .bc-footer {
+    padding: 4px 20px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+  }
+  .bc-reset {
+    font-size: 12px;
+    color: var(--grey);
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 4px;
+  }
+  .bc-savenote {
+    font-size: 11px;
+    color: #A79EC0;
+  }
+</style>
+<script>
+(function () {
+  const UI = {
+    fr: {
+      eyebrow: "Pratique personnelle",
+      title: "Mon parcours Blender",
+      sub: "Coche chaque étape au fur et à mesure que tu la reproduis en suivant la vidéo « Apprendre Blender — Tutoriel pour débutant ». Le 📍 indique où trouver l'outil à l'écran.",
+      reset: "Réinitialiser ma progression",
+      saved: "Progression sauvegardée automatiquement",
+      noteIcon: "🔍"
+    },
+    en: {
+      eyebrow: "Personal practice",
+      title: "My Blender journey",
+      sub: "Check off each step as you reproduce it while following the video « Apprendre Blender — Beginner Tutorial ». The 📍 shows you where to find the tool on screen.",
+      reset: "Reset my progress",
+      saved: "Progress saved automatically",
+      noteIcon: "🔍"
+    }
+  };
+
+  const DATA = [
+    {
+      id: "s1", accent: "var(--purple)",
+      title: { fr: "Découverte de l'interface", en: "Discovering the interface" },
+      eyebrow: { fr: "Chapitre 1 · 00:22", en: "Chapter 1 · 00:22" },
+      items: [
+        { fr: ["Ouvrir Blender et observer le splash screen", "Général, 2D, Sculpture, VFX, Montage vidéo — apparaît à l'ouverture"],
+          en: ["Open Blender and look at the splash screen", "General, 2D Animation, Sculpting, VFX, Video Editing — appears on launch"] },
+        { fr: ["Lancer un fichier (clic sur « Général »)", "Bouton au centre de l'écran d'accueil"],
+          en: ["Start a file (click « General »)", "Button in the middle of the splash screen"] },
+        { fr: ["Repérer le viewport, la prévisualisation 3D", "La grande zone grise au centre de l'écran"],
+          en: ["Locate the viewport, the 3D preview", "The large grey area in the middle of the screen"] },
+        { fr: ["Créer une 2e vue (glisser depuis un coin du viewport), puis la supprimer (clic droit sur la bordure → Join Left/Right)", "Créer : coin du viewport, curseur en croix. Supprimer : bordure entre les 2 vues"],
+          en: ["Create a 2nd view (drag from a corner of the viewport), then remove it (right-click the border → Join Left/Right)", "Create: corner of the viewport, cursor turns into a cross. Remove: border between the 2 views"] },
+        { fr: ["Repérer les onglets File / Edit / Render / Window / Help", "Tout en haut de la fenêtre, à gauche"],
+          en: ["Locate the File / Edit / Render / Window / Help tabs", "Top of the window, on the left"] },
+        { fr: ["Parcourir les espaces de travail (clic sur les onglets du haut)", "Layout, Modeling, Sculpting, UV Editing, Texture Paint, Shading, Animation, Rendering, Compositing, Geometry Nodes, Scripting"],
+          en: ["Browse the workspaces (click the tabs at the top)", "Layout, Modeling, Sculpting, UV Editing, Texture Paint, Shading, Animation, Rendering, Compositing, Geometry Nodes, Scripting"] },
+        { fr: ["Basculer entre Object / Edit / Sculpt Mode (Tab)", "Ou le menu déroulant en haut à gauche du viewport"],
+          en: ["Switch between Object / Edit / Sculpt Mode (Tab)", "Or the dropdown menu at the top-left of the viewport"] },
+        { fr: ["Repérer la Collection de la scène (caméra, cube, lumière)", "Panneau « Outliner », en haut à droite de l'écran"],
+          en: ["Locate the Scene Collection (camera, cube, light)", "« Outliner » panel, top-right of the screen"] },
+        { fr: ["Explorer les propriétés d'objet, de rendu, de calques, de scène et World", "Colonne d'icônes verticale, en bas à droite de l'écran"],
+          en: ["Explore the object, render, view layer, scene and World properties", "Vertical icon column, bottom-right of the screen"] },
+        { fr: ["Ouvrir l'onglet Modifiers (icône clé à molette)", "Même colonne d'icônes, en bas à droite"],
+          en: ["Open the Modifiers tab (wrench icon)", "Same icon column, bottom-right"] },
+        { fr: ["Repérer Particle systems / Physics / Constraints / Material", "Juste sous l'icône Modifiers, même colonne"],
+          en: ["Locate Particle systems / Physics / Constraints / Material", "Just below the Modifiers icon, same column"] },
+        { fr: ["Régler langue, thèmes, Add-ons (Edit > Preferences)", "Menu « Edit », tout en haut à gauche"],
+          en: ["Set language, themes, Add-ons (Edit > Preferences)", "« Edit » menu, top-left"] }
+      ]
+    },
+    {
+      id: "s2", accent: "var(--gold)",
+      title: { fr: "Navigation dans Blender", en: "Navigating in Blender" },
+      eyebrow: { fr: "Chapitre 2 · 13:11", en: "Chapter 2 · 13:11" },
+      items: [
+        { fr: ["Orbiter (clic molette maintenu + déplacer la souris)", "Molette de la souris — pas de bouton à l'écran"],
+          en: ["Orbit (hold middle mouse button + move the mouse)", "Mouse scroll wheel — no on-screen button"] },
+        { fr: ["Utiliser le Gizmo d'axes", "Boule colorée XYZ, coin supérieur droit du viewport"],
+          en: ["Use the axis Gizmo", "Coloured XYZ ball, top-right corner of the viewport"] },
+        { fr: ["Zoomer (molette, ou clic sur la loupe)", "Loupe : bord droit du viewport, sous le Gizmo d'axes"],
+          en: ["Zoom (scroll wheel, or click the magnifying glass)", "Magnifying glass: right edge of the viewport, below the axis Gizmo"] },
+        { fr: ["Faire un panoramique (Shift + clic molette)", "Ou l'icône Main, juste sous la loupe, bord droit"],
+          en: ["Pan the view (Shift + middle mouse button)", "Or the Hand icon, just below the magnifying glass, right edge"] },
+        { fr: ["Basculer en vue caméra (clic sur la caméra)", "Icône caméra dans l'Outliner en haut à droite, ou objet caméra dans le viewport"],
+          en: ["Switch to camera view (click the camera)", "Camera icon in the Outliner top-right, or the camera object in the viewport"] },
+        { fr: ["Sortir de la vue caméra (clic molette)", "N'importe où dans le viewport"],
+          en: ["Exit camera view (middle mouse click)", "Anywhere in the viewport"] },
+        { fr: ["Déplacer la caméra (G / R comme un objet classique)", "Sélectionner la caméra d'abord (Outliner ou viewport)"],
+          en: ["Move the camera (G / R, just like a regular object)", "Select the camera first (Outliner or viewport)"] },
+        { fr: ["Recentrer la vue sur un objet « perdu » hors champ (. du pavé numérique)", "Sélectionner l'objet d'abord — puis Ctrl+Alt+0 pour aligner la caméra dessus"],
+          en: ["Recentre the view on a « lost » object out of frame (. on the numpad)", "Select the object first — then Ctrl+Alt+0 to align the camera to it"] },
+        { fr: ["Basculer entre les vues (0 / 1 / 3 / 7 : caméra / face / côté / dessus)", "Pavé numérique du clavier — pas de bouton à l'écran"],
+          en: ["Switch between views (0 / 1 / 3 / 7: camera / front / side / top)", "Number pad on the keyboard — no on-screen button"] },
+        { fr: ["Activer l'émulation du pavé numérique sur Mac (Preferences > Input > Emulate Numpad)", "Edit > Preferences, en haut à gauche"],
+          en: ["Enable numpad emulation on Mac (Preferences > Input > Emulate Numpad)", "Edit > Preferences, top-left"] }
+      ]
+    },
+    {
+      id: "s3", accent: "var(--purple)",
+      title: { fr: "Déplacer les objets", en: "Moving objects" },
+      eyebrow: { fr: "Chapitre 3 · 15:56", en: "Chapter 3 · 15:56" },
+      items: [
+        { fr: ["Sélectionner un objet (clic gauche)", "N'importe quel objet dans le viewport"],
+          en: ["Select an object (left click)", "Any object in the viewport"] },
+        { fr: ["Utiliser l'outil Move (flèches colorées par axe)", "2e icône (flèches croisées), barre d'outils tout à gauche"],
+          en: ["Use the Move tool (colour-coded axis arrows)", "2nd icon (crossed arrows), toolbar on the far left"] },
+        { fr: ["Annuler (Cmd/Ctrl+Z)", "Clavier — pas de bouton à l'écran"],
+          en: ["Undo (Cmd/Ctrl+Z)", "Keyboard — no on-screen button"] },
+        { fr: ["Ouvrir le panneau de valeurs précises (N)", "Ou petite flèche sur le bord droit du viewport"],
+          en: ["Open the precise-values panel (N)", "Or the small arrow on the right edge of the viewport"] },
+        { fr: ["Essayer l'outil Rotation", "3e icône (flèche circulaire), barre d'outils à gauche"],
+          en: ["Try the Rotate tool", "3rd icon (circular arrow), toolbar on the left"] },
+        { fr: ["Essayer l'outil Scale", "4e icône (carrés), barre d'outils à gauche"],
+          en: ["Try the Scale tool", "4th icon (squares), toolbar on the left"] },
+        { fr: ["Pratiquer G / R / S + axe (ex. Gy, Rx, Sx)", "Clavier, où que soit la souris dans le viewport"],
+          en: ["Practise G / R / S + axis (e.g. Gy, Rx, Sx)", "Keyboard, wherever the mouse is in the viewport"] },
+        { fr: ["Réinitialiser une transformation (Alt+G / Alt+R / Alt+S)", "Clavier uniquement"],
+          en: ["Reset a transform (Alt+G / Alt+R / Alt+S)", "Keyboard only"] }
+      ]
+    },
+    {
+      id: "s4", accent: "var(--teal)",
+      title: { fr: "Créer et modifier un objet", en: "Creating and editing an object" },
+      eyebrow: { fr: "Chapitre 4 · 20:03", en: "Chapter 4 · 20:03" },
+      note: { fr: "Après une étape qui change la forme (Mirror...), vérifie le résultat : icônes de shading en haut à droite du viewport (Solid → Material Preview), ou vue caméra (0 du pavé numérique).",
+              en: "After a step that changes the shape (Mirror...), check the result: shading icons top-right of the viewport (Solid → Material Preview), or camera view (0 on the numpad)." },
+      items: [
+        { fr: ["Supprimer un objet (X)", "Clavier, objet sélectionné"],
+          en: ["Delete an object (X)", "Keyboard, object selected"] },
+        { fr: ["Copier/coller (Cmd/Ctrl+C puis Cmd/Ctrl+V)", "Clavier uniquement"],
+          en: ["Copy/paste (Cmd/Ctrl+C then Cmd/Ctrl+V)", "Keyboard only"] },
+        { fr: ["Dupliquer (Shift+D)", "Clavier uniquement"],
+          en: ["Duplicate (Shift+D)", "Keyboard only"] },
+        { fr: ["Ajouter une primitive (Shift+A > Mesh > Cube, Cône, Cercle…)", "Ou le menu « Add » tout en haut du viewport"],
+          en: ["Add a primitive (Shift+A > Mesh > Cube, Cone, Circle…)", "Or the « Add » menu at the top of the viewport"] },
+        { fr: ["Joindre deux objets (Cmd/Ctrl+J)", "Clavier, 2 objets sélectionnés (Shift+clic)"],
+          en: ["Join two objects (Cmd/Ctrl+J)", "Keyboard, 2 objects selected (Shift+click)"] },
+        { fr: ["Séparer des objets joints (Edit Mode, sélection, P)", "Astuce : survoler un morceau + L sélectionne tout le morceau connecté d'un coup"],
+          en: ["Separate joined objects (Edit Mode, selection, P)", "Tip: hover a piece + L instantly selects the whole connected chunk"] },
+        { fr: ["Cacher / afficher un objet (H)", "Ou l'icône œil dans l'Outliner, en haut à droite"],
+          en: ["Hide / show an object (H)", "Or the eye icon in the Outliner, top-right"] },
+        { fr: ["Créer un effet miroir (Set Origin > Origin to 3D Cursor, puis Modifiers > Mirror)", "Onglet clé à molette (Modifiers), bouton « Add Modifier » → Generate → Mirror (pas « Edit »)"],
+          en: ["Create a mirror effect (Set Origin > Origin to 3D Cursor, then Modifiers > Mirror)", "Wrench tab (Modifiers), « Add Modifier » button → Generate → Mirror (not « Edit »)"] }
+      ]
+    },
+    {
+      id: "s5", accent: "var(--teal)",
+      title: { fr: "Modélisation basique et logique", en: "Basic modelling and logic" },
+      eyebrow: { fr: "Chapitre 5 · 25:54", en: "Chapter 5 · 25:54" },
+      note: { fr: "Après chaque outil (Extrude, Inset, Bevel, Loop Cut...), vérifie le rendu : icônes de shading en haut à droite du viewport (Solid → Material Preview → Rendered), ou vue caméra (0 du pavé numérique, Ctrl+Alt+0 pour aligner).",
+              en: "After each tool (Extrude, Inset, Bevel, Loop Cut...), check the render: shading icons top-right of the viewport (Solid → Material Preview → Rendered), or camera view (0 on the numpad, Ctrl+Alt+0 to align)." },
+      items: [
+        { fr: ["Passer en Edit Mode (Tab), choisir Vertex / Edge / Face (1 / 2 / 3)", "3 icônes en haut à gauche du viewport"],
+          en: ["Switch to Edit Mode (Tab), choose Vertex / Edge / Face (1 / 2 / 3)", "3 icons at the top-left of the viewport"] },
+        { fr: ["Essayer l'Extrusion (E)", "Aussi dans la barre d'outils à gauche, en Edit Mode"],
+          en: ["Try Extrude (E)", "Also in the left toolbar, in Edit Mode"] },
+        { fr: ["Essayer l'Inset (I)", "Juste sous l'outil Extrude, barre d'outils à gauche"],
+          en: ["Try Inset (I)", "Just below the Extrude tool, left toolbar"] },
+        { fr: ["Passer en Edge mode avant le Bevel (2)", "Ou l'icône du milieu des 3, en haut du viewport à côté de « Global »"],
+          en: ["Switch to Edge mode before the Bevel (2)", "Or the middle icon of the 3, top of the viewport next to « Global »"] },
+        { fr: ["Sélectionner une arête, puis Bevel (Ctrl/Cmd+B)", "Bouger la souris pour régler la largeur, clic gauche pour valider — plus fiable que l'outil Bevel de la barre d'outils (glisser-déposer imprécis)"],
+          en: ["Select an edge, then Bevel (Ctrl/Cmd+B)", "Move the mouse to set the width, left-click to confirm — more reliable than the toolbar's Bevel tool (imprecise drag-and-drop)"] },
+        { fr: ["Augmenter les Segments pour arrondir le biseau", "Panneau en bas à gauche (ou F9) → champ Segments → survoler et cliquer sur la petite flèche › à droite du champ"],
+          en: ["Increase the Segments to round off the bevel", "Panel bottom-left (or F9) → Segments field → hover and click the small › arrow on the right of the field"] },
+        { fr: ["Replier le panneau et inspecter le résultat", "Petite flèche ▾ à côté de « Bevel » pour le replier, puis zoomer/orbiter (molette) sur l'arête"],
+          en: ["Collapse the panel and inspect the result", "Small ▾ arrow next to « Bevel » to collapse it, then zoom/orbit (scroll wheel) on the edge"] },
+        { fr: ["Essayer le Loop Cut (Ctrl/Cmd+R)", "Sous l'outil Bevel, barre d'outils à gauche"],
+          en: ["Try Loop Cut (Ctrl/Cmd+R)", "Below the Bevel tool, left toolbar"] },
+        { fr: ["Ajouter le modifier Subdivide (Modifiers > Add Modifier > Subdivision Surface)", "Onglet Modifiers en bas à droite"],
+          en: ["Add the Subdivide modifier (Modifiers > Add Modifier > Subdivision Surface)", "Modifiers tab, bottom-right"] },
+        { fr: ["Combiner Inset + Extrusion pour creuser une petite cavité", "Mêmes outils que ci-dessus, l'un après l'autre"],
+          en: ["Combine Inset + Extrude to carve out a small cavity", "Same tools as above, one after the other"] },
+        { fr: ["Ajouter Mirror en premier (Add Modifier > Generate > Mirror)", "Icône clé à molette en bas à droite — toujours ajouter Mirror AVANT Subdivide"],
+          en: ["Add Mirror first (Add Modifier > Generate > Mirror)", "Wrench icon bottom-right — always add Mirror BEFORE Subdivide"] },
+        { fr: ["Ajouter Subdivision Surface juste après (Add Modifier > Generate > Subdivision Surface)", "Se place automatiquement en dessous de Mirror dans la pile — c'est le bon ordre, rien d'autre à faire"],
+          en: ["Add Subdivision Surface right after (Add Modifier > Generate > Subdivision Surface)", "Automatically placed below Mirror in the stack — that's the correct order, nothing else to do"] },
+        { fr: ["Vérifier l'ordre dans la pile : Mirror au-dessus, Subdivision Surface en dessous", "Si inversé : flèche ▾ à droite du modifier → « Move Up » / « Move Down », ou glisser l'icône ⋮⋮ (points verticaux, tout à droite du bandeau)"],
+          en: ["Check the stack order: Mirror above, Subdivision Surface below", "If reversed: ▾ arrow to the right of the modifier → « Move Up » / « Move Down », or drag the ⋮⋮ icon (vertical dots, far right of the header)"] },
+        { fr: ["Bonus : lisser l'apparence sans toucher la géométrie (Shade Smooth)", "Menu Object en haut, ou clic droit sur l'objet → Shade Smooth. Attention à ne pas confondre avec l'onglet Sculpting, qui lui déforme vraiment le mesh au moindre clic"],
+          en: ["Bonus: smooth the appearance without touching the geometry (Shade Smooth)", "Object menu at the top, or right-click the object → Shade Smooth. Don't confuse with the Sculpting tab, which really deforms the mesh on the slightest click"] }
+      ]
+    }
+  ];
+
+  const STORAGE_KEY = "blender-tuto-checklist-progress";
+  const LANG_KEY = "blender-tuto-checklist-lang";
+  let state = {};
+  let lang = "fr";
+
+  const root = document.getElementById("blender-checklist-root");
+
+  function totalItems() {
+    return DATA.reduce((acc, s) => acc + s.items.length, 0);
+  }
+  function checkedCount() {
+    return Object.values(state).filter(Boolean).length;
+  }
+
+  function checkIcon() {
+    return '<svg viewBox="0 0 16 16" fill="none"><path d="M3 8.5L6.2 11.5L13 4.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  }
+  function chevronIcon() {
+    return '<svg class="bc-chevron" viewBox="0 0 20 20" fill="none"><path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function render() {
+    const t = UI[lang];
+    const total = totalItems();
+    const done = checkedCount();
+    const pct = total ? Math.round((done / total) * 100) : 0;
+
+    let html = '';
+    html += '<div class="bc-hero">';
+    html += '  <div class="bc-lang-toggle">';
+    html += '    <button class="bc-lang-btn' + (lang === 'fr' ? ' active' : '') + '" data-lang="fr">FR</button>';
+    html += '    <button class="bc-lang-btn' + (lang === 'en' ? ' active' : '') + '" data-lang="en">EN</button>';
+    html += '  </div>';
+    html += '  <p class="bc-eyebrow">' + t.eyebrow + '</p>';
+    html += '  <h1 class="bc-title">' + t.title + '</h1>';
+    html += '  <p class="bc-sub">' + t.sub + '</p>';
+    html += '  <div class="bc-progress-row">';
+    html += '    <div class="bc-progress-track"><div class="bc-progress-fill" style="width:' + pct + '%"></div></div>';
+    html += '    <div class="bc-progress-label">' + done + ' / ' + total + '</div>';
+    html += '  </div>';
+    html += '</div>';
+
+    html += '<div class="bc-body">';
+    DATA.forEach((section) => {
+      const sectionDone = section.items.filter((_, i) => state[section.id + '-' + i]).length;
+      const isOpen = section._open !== false; // default open
+      html += '<div class="bc-section' + (isOpen ? ' open' : '') + '" data-section="' + section.id + '" style="--accent:' + section.accent + '">';
+      html += '  <div class="bc-section-head" data-toggle="' + section.id + '">';
+      html += '    <div class="bc-section-titlewrap">';
+      html += '      <span class="bc-section-eyebrow">' + section.eyebrow[lang] + '</span>';
+      html += '      <span class="bc-section-title">' + section.title[lang] + '</span>';
+      html += '    </div>';
+      html += '    <div class="bc-section-right">';
+      html += '      <span class="bc-count">' + sectionDone + '/' + section.items.length + '</span>';
+      html += chevronIcon();
+      html += '    </div>';
+      html += '  </div>';
+      html += '  <div class="bc-items">';
+      if (section.note) {
+        html += '  <div class="bc-note">' + t.noteIcon + ' <span>' + escapeHtml(section.note[lang]) + '</span></div>';
+      }
+      section.items.forEach((pair, i) => {
+        const text = pair[lang][0];
+        const hint = pair[lang][1];
+        const itemId = section.id + '-' + i;
+        const checked = !!state[itemId];
+        html += '<div class="bc-item' + (checked ? ' done' : '') + '" data-item="' + itemId + '">';
+        html += '  <div class="bc-checkbox' + (checked ? ' checked' : '') + '">' + checkIcon() + '</div>';
+        html += '  <div class="bc-item-textwrap">';
+        html += '    <div class="bc-item-text">' + escapeHtml(text) + '</div>';
+        if (hint) {
+          html += '    <div class="bc-item-hint">' + escapeHtml(hint) + '</div>';
+        }
+        html += '  </div>';
+        html += '</div>';
+      });
+      html += '  </div>';
+      html += '</div>';
+    });
+    html += '</div>';
+
+    html += '<div class="bc-footer">';
+    html += '  <button class="bc-reset" data-reset="1">' + t.reset + '</button>';
+    html += '  <span class="bc-savenote">' + t.saved + '</span>';
+    html += '</div>';
+
+    root.innerHTML = html;
+    attachHandlers();
+  }
+
+  function attachHandlers() {
+    root.querySelectorAll('[data-toggle]').forEach((el) => {
+      el.addEventListener('click', () => {
+        const id = el.getAttribute('data-toggle');
+        const section = DATA.find((s) => s.id === id);
+        section._open = section._open === false ? true : false;
+        render();
+      });
+    });
+    root.querySelectorAll('[data-item]').forEach((el) => {
+      el.addEventListener('click', async () => {
+        const id = el.getAttribute('data-item');
+        state[id] = !state[id];
+        render();
+        await persist();
+      });
+    });
+    root.querySelectorAll('[data-lang]').forEach((el) => {
+      el.addEventListener('click', async () => {
+        lang = el.getAttribute('data-lang');
+        render();
+        await persistLang();
+      });
+    });
+    const resetBtn = root.querySelector('[data-reset]');
+    if (resetBtn) {
+      resetBtn.addEventListener('click', async () => {
+        state = {};
+        render();
+        await persist();
+      });
+    }
+  }
+
+  async function persist() {
+    try {
+      await window.storage.set(STORAGE_KEY, JSON.stringify(state), false);
+    } catch (e) {
+      console.error('Impossible de sauvegarder la progression', e);
+    }
+  }
+
+  async function persistLang() {
+    try {
+      await window.storage.set(LANG_KEY, lang, false);
+    } catch (e) {
+      console.error('Impossible de sauvegarder la langue', e);
+    }
+  }
+
+  async function load() {
+    try {
+      const result = await window.storage.get(STORAGE_KEY, false);
+      if (result && result.value) {
+        state = JSON.parse(result.value);
+      }
+    } catch (e) {
+      state = {};
+    }
+    try {
+      const langResult = await window.storage.get(LANG_KEY, false);
+      if (langResult && langResult.value) {
+        lang = langResult.value;
+      }
+    } catch (e) {
+      lang = "fr";
+    }
+    render();
+  }
+
+  load();
+})();
+</script>
