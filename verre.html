@@ -1,3 +1,11 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon verre d'eau</title>
+</head>
+<body style="margin:0; padding:24px 12px; background:#F0EDF7; font-family:-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
 <div id="blender-checklist-root"></div>
 <style>
   #blender-checklist-root {
@@ -423,60 +431,56 @@
       });
     });
     root.querySelectorAll('[data-item]').forEach((el) => {
-      el.addEventListener('click', async () => {
+      el.addEventListener('click', () => {
         const id = el.getAttribute('data-item');
         state[id] = !state[id];
         render();
-        await persist();
+        persist();
       });
     });
     root.querySelectorAll('[data-lang]').forEach((el) => {
-      el.addEventListener('click', async () => {
+      el.addEventListener('click', () => {
         lang = el.getAttribute('data-lang');
         render();
-        await persistLang();
+        persistLang();
       });
     });
     const resetBtn = root.querySelector('[data-reset]');
     if (resetBtn) {
-      resetBtn.addEventListener('click', async () => {
+      resetBtn.addEventListener('click', () => {
         state = {};
         render();
-        await persist();
+        persist();
       });
     }
   }
 
-  async function persist() {
+  function persist() {
     try {
-      await window.storage.set(STORAGE_KEY, JSON.stringify(state), false);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     } catch (e) {
       console.error('Impossible de sauvegarder la progression', e);
     }
   }
 
-  async function persistLang() {
+  function persistLang() {
     try {
-      await window.storage.set(LANG_KEY, lang, false);
+      localStorage.setItem(LANG_KEY, lang);
     } catch (e) {
       console.error('Impossible de sauvegarder la langue', e);
     }
   }
 
-  async function load() {
+  function load() {
     try {
-      const result = await window.storage.get(STORAGE_KEY, false);
-      if (result && result.value) {
-        state = JSON.parse(result.value);
-      }
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) { state = JSON.parse(saved); }
     } catch (e) {
       state = {};
     }
     try {
-      const langResult = await window.storage.get(LANG_KEY, false);
-      if (langResult && langResult.value) {
-        lang = langResult.value;
-      }
+      const savedLang = localStorage.getItem(LANG_KEY);
+      if (savedLang) { lang = savedLang; }
     } catch (e) {
       lang = "fr";
     }
@@ -486,3 +490,6 @@
   load();
 })();
 </script>
+
+</body>
+</html>
