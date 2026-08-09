@@ -276,7 +276,7 @@
     fr: {
       eyebrow: "Pratique personnelle",
       title: "Mon verre d'eau",
-      sub: "Coche chaque étape pour créer les matériaux verre + eau. Le 📍 indique où trouver l'outil à l'écran.",
+      sub: "Coche chaque étape en suivant la transcription complète du tuto. Le 📍 indique où trouver l'outil à l'écran.",
       reset: "Réinitialiser ma progression",
       saved: "Progression sauvegardée automatiquement",
       noteIcon: "🔍"
@@ -284,7 +284,7 @@
     en: {
       eyebrow: "Personal practice",
       title: "My glass of water",
-      sub: "Check off each step to create the glass + water materials. The 📍 shows you where to find the tool on screen.",
+      sub: "Check off each step while following the tutorial's full transcript. The 📍 shows you where to find the tool on screen.",
       reset: "Reset my progress",
       saved: "Progress saved automatically",
       noteIcon: "🔍"
@@ -294,30 +294,125 @@
   const DATA = [
     {
       id: "s1", accent: "var(--purple)",
-      title: { fr: "Verre d'eau — matériaux", en: "Glass of water — materials" },
-      eyebrow: { fr: "Technique verre/eau", en: "Glass/water technique" },
-      noteType: "warn",
-      note: { fr: "⚠️ Je n'ai pas la transcription exacte de cette vidéo — voici les étapes générales de la technique verre/eau. Envoie-moi la transcription si tu veux plus de précision.",
-              en: "⚠️ I don't have this video's exact transcript — these are the general steps of the glass/water technique. Send me the transcript if you'd like more precision." },
+      title: { fr: "Modéliser le corps du verre", en: "Modelling the glass body" },
+      eyebrow: { fr: "Étape 1", en: "Step 1" },
       items: [
-        { fr: ["Modéliser le verre (cylindre, ou courbe Bézier + Spin)", "Base similaire à la tasse, ou technique du tour de potier (courbe + modifier Screw/Spin)"],
-          en: ["Model the glass (cylinder, or Bezier curve + Spin)", "Similar base to the mug, or the « potter's wheel » technique (curve + Screw/Spin modifier)"] },
-        { fr: ["Passer dans l'espace Shading", "Onglet en haut de l'écran, à côté de Rendering"],
-          en: ["Switch to the Shading workspace", "Tab at the top of the screen, next to Rendering"] },
-        { fr: ["Créer un nouveau matériau pour le verre (New)", "Bouton « New » dans le panneau Material, en bas à droite"],
-          en: ["Create a new material for the glass (New)", "« New » button in the Material panel, bottom-right"] },
-        { fr: ["Régler Transmission à 1", "Dans le nœud Principled BSDF — laisse passer la lumière à travers"],
-          en: ["Set Transmission to 1", "In the Principled BSDF node — lets light pass through"] },
-        { fr: ["Régler l'IOR à 1.5 (verre)", "Champ IOR du Principled BSDF — l'indice de réfraction du verre classique"],
-          en: ["Set IOR to 1.5 (glass)", "Principled BSDF's IOR field — the refractive index of ordinary glass"] },
-        { fr: ["Baisser la Roughness proche de 0", "Pour un rendu net et transparent plutôt que flou"],
-          en: ["Lower the Roughness close to 0", "For a crisp, transparent result rather than a blurry one"] },
-        { fr: ["Créer un second matériau pour l'eau à l'intérieur", "Même procédure, nouveau slot de matériau"],
-          en: ["Create a second material for the water inside", "Same procedure, a new material slot"] },
-        { fr: ["Régler l'IOR de l'eau à 1.33", "Différent du verre — c'est ce qui crée l'effet de déformation optique réaliste entre les deux matières"],
-          en: ["Set the water's IOR to 1.33", "Different from the glass — this creates the realistic optical distortion between the two materials"] },
-        { fr: ["Basculer en Rendered pour vérifier le résultat", "Icônes de shading en haut à droite du viewport — Eevee peut nécessiter d'activer Screen Space Reflections/Refractions dans Render Properties"],
-          en: ["Switch to Rendered shading to check the result", "Shading icons top-right of the viewport — Eevee may need Screen Space Reflections/Refractions enabled in Render Properties"] }
+        { fr: ["Tout sélectionner et supprimer la scène par défaut (A puis X)", "Dans le viewport, rien de sélectionné au préalable"],
+          en: ["Select all and delete the default scene (A then X)", "In the viewport, with nothing pre-selected"] },
+        { fr: ["Ajouter un cylindre (Shift+A > Mesh > Cylinder)", "Point de départ du verre"],
+          en: ["Add a cylinder (Shift+A > Mesh > Cylinder)", "Starting point for the glass"] },
+        { fr: ["Passer en Edit Mode, sélectionner la face du dessus (Tab, puis Face mode 3)", "Icônes de sélection en haut du viewport"],
+          en: ["Switch to Edit Mode, select the top face (Tab, then Face mode 3)", "Selection icons at the top of the viewport"] },
+        { fr: ["Étirer la face vers le haut pour donner la hauteur du verre (G, Z)", "À l'œil — pas de valeur exacte, ajuste selon ton goût"],
+          en: ["Stretch the face upward to set the glass's height (G, Z)", "By eye — no exact value, adjust to taste"] },
+        { fr: ["Insérer une face pour définir l'épaisseur de la paroi (I)", "Toujours sur la face du dessus sélectionnée"],
+          en: ["Inset a face to define the wall thickness (I)", "Still on the selected top face"] },
+        { fr: ["Creuser l'intérieur en extrudant vers le bas (E, puis déplacer/scroller vers le bas)", "Ne pas dépasser le fond extérieur du verre"],
+          en: ["Hollow out the inside by extruding downward (E, then move/scroll down)", "Don't go past the outer bottom of the glass"] },
+        { fr: ["Ajuster la hauteur du fond intérieur (G, Z)", "Astuce : Alt+Z affiche en rayons X pour voir à travers et bien se positionner"],
+          en: ["Adjust the height of the inner bottom (G, Z)", "Tip: Alt+Z shows X-ray mode to see through and position accurately"] },
+        { fr: ["Ajuster l'épaisseur du fond (G, Z sur les points intérieurs)", "Laisse un petit fond de verre, pas trop fin"],
+          en: ["Adjust the bottom's thickness (G, Z on the inner points)", "Leave a small glass floor, not too thin"] }
+      ]
+    },
+    {
+      id: "s2", accent: "var(--teal)",
+      title: { fr: "Lisser et affiner la forme", en: "Smoothing and refining the shape" },
+      eyebrow: { fr: "Étape 2", en: "Step 2" },
+      note: { fr: "Après le Subdivision, vérifie le rendu : icônes de shading en haut à droite du viewport (Solid → Material Preview), ou vue caméra (0 du pavé numérique).",
+              en: "After the Subdivision, check the result: shading icons top-right of the viewport (Solid → Material Preview), or camera view (0 on the numpad)." },
+      items: [
+        { fr: ["Retourner en Object Mode (Tab)", "Pour accéder aux modifiers"],
+          en: ["Go back to Object Mode (Tab)", "To access the modifiers"] },
+        { fr: ["Ajouter le modifier Subdivision Surface (icône clé à molette > Add Modifier)", "Lisse l'objet en ajoutant des faces"],
+          en: ["Add the Subdivision Surface modifier (wrench icon > Add Modifier)", "Smooths the object by adding faces"] },
+        { fr: ["Augmenter le niveau du Subdivision Surface à 3", "Champ Levels Viewport dans le modifier"],
+          en: ["Increase the Subdivision Surface level to 3", "Levels Viewport field in the modifier"] },
+        { fr: ["Repasser en Edit Mode, face intérieure sélectionnée : Inset deux fois (I, I)", "Arrondit le bord du verre"],
+          en: ["Switch back to Edit Mode, inner face selected: Inset twice (I, I)", "Rounds off the rim of the glass"] },
+        { fr: ["Loop Cut sur les arêtes verticales, glisser vers le bas pour aplatir la base (Ctrl/Cmd+R)", "Réduit l'effet trop sphérique du Subdivision en dessous"],
+          en: ["Loop Cut on the vertical edges, slide down to flatten the base (Ctrl/Cmd+R)", "Reduces the overly spherical effect of the Subdivision underneath"] },
+        { fr: ["Loop Cut près du haut, glisser vers le haut (Ctrl/Cmd+R)", "Même geste, côté opposé"],
+          en: ["Loop Cut near the top, slide up (Ctrl/Cmd+R)", "Same gesture, opposite side"] },
+        { fr: ["Loop Cut à l'intérieur, glisser vers le haut pour l'épaisseur (Ctrl/Cmd+R)", "Sur les arêtes intérieures du verre"],
+          en: ["Loop Cut on the inside, slide up for thickness (Ctrl/Cmd+R)", "On the glass's inner edges"] },
+        { fr: ["Loop Cut en bas à l'intérieur, réduire légèrement (Ctrl/Cmd+R)", "Finalise l'épaisseur du fond"],
+          en: ["Loop Cut at the bottom inside, reduce slightly (Ctrl/Cmd+R)", "Finalises the bottom's thickness"] },
+        { fr: ["Sélectionner la face du dessous, Inset deux fois pour l'aplatir (Face mode 3, puis I, I)", "Évite un fond trop arrondi par le Subdivision"],
+          en: ["Select the bottom face, Inset twice to flatten it (Face mode 3, then I, I)", "Avoids a bottom that's too rounded by the Subdivision"] },
+        { fr: ["Lisser l'objet entier (clic droit > Shade Smooth)", "Dernière touche de finition sur le verre"],
+          en: ["Smooth the whole object (right-click > Shade Smooth)", "Final finishing touch on the glass"] }
+      ]
+    },
+    {
+      id: "s3", accent: "var(--gold)",
+      title: { fr: "Modéliser l'eau", en: "Modelling the water" },
+      eyebrow: { fr: "Étape 3", en: "Step 3" },
+      items: [
+        { fr: ["Ajouter un nouveau cylindre pour l'eau (Shift+A > Mesh > Cylinder)", "Objet séparé du verre"],
+          en: ["Add a new cylinder for the water (Shift+A > Mesh > Cylinder)", "Separate object from the glass"] },
+        { fr: ["Le remonter au niveau du fond du verre (G, Z)", "Doit reposer sur le fond intérieur"],
+          en: ["Move it up to the level of the glass's bottom (G, Z)", "Should rest on the inner bottom"] },
+        { fr: ["Le réduire légèrement pour qu'il ne dépasse pas des parois (S)", "Évite que l'eau traverse le verre visuellement"],
+          en: ["Scale it down slightly so it doesn't poke through the walls (S)", "Avoids the water visually clipping through the glass"] },
+        { fr: ["Ajuster le niveau de l'eau (sélectionner la face du dessus, G, Z)", "À quelle hauteur tu veux remplir le verre"],
+          en: ["Adjust the water level (select the top face, G, Z)", "How high you want to fill the glass"] }
+      ]
+    },
+    {
+      id: "s4", accent: "var(--purple)",
+      title: { fr: "Matériaux : verre et eau", en: "Materials: glass and water" },
+      eyebrow: { fr: "Étape 4", en: "Step 4" },
+      items: [
+        { fr: ["Passer dans l'espace Shading", "Onglet en haut de l'écran"],
+          en: ["Switch to the Shading workspace", "Tab at the top of the screen"] },
+        { fr: ["Sélectionner le verre, cliquer sur New pour créer un matériau", "Panneau Material en bas de l'éditeur de nœuds"],
+          en: ["Select the glass, click New to create a material", "Material panel at the bottom of the node editor"] },
+        { fr: ["Supprimer le nœud Principled BSDF par défaut", "Sélectionner le nœud puis X ou Delete"],
+          en: ["Delete the default Principled BSDF node", "Select the node then X or Delete"] },
+        { fr: ["Ajouter un nœud Glass BSDF (Shift+A > Search > « Glass »)", "En français, souvent affiché « Verre BSDF »"],
+          en: ["Add a Glass BSDF node (Shift+A > Search > « Glass »)", "In French Blender, often shown as « Verre BSDF »"] },
+        { fr: ["Relier sa sortie à l'entrée Surface du Material Output", "Glisser depuis le point de sortie vers le point d'entrée"],
+          en: ["Connect its output to the Material Output's Surface input", "Drag from the output socket to the input socket"] },
+        { fr: ["Basculer en Rendered pour prévisualiser (4e icône de shading)", "Ça paraîtra bizarre tant qu'il n'y a pas de lumière — normal"],
+          en: ["Switch to Rendered to preview (4th shading icon)", "It'll look odd until there's a light — that's normal"] },
+        { fr: ["Sélectionner l'eau, New pour un nouveau matériau", "Même panneau Material"],
+          en: ["Select the water, New for a new material", "Same Material panel"] },
+        { fr: ["Supprimer le Principled BSDF, ajouter un Glass BSDF, relier au Material Output", "Même procédure que pour le verre"],
+          en: ["Delete the Principled BSDF, add a Glass BSDF, connect to the Material Output", "Same procedure as for the glass"] },
+        { fr: ["Optionnel : changer la couleur du Glass BSDF pour teinter l'eau", "Champ Color du nœud — ex. rose pour de la grenadine"],
+          en: ["Optional: change the Glass BSDF's colour to tint the water", "Colour field of the node — e.g. pink for grenadine"] }
+      ]
+    },
+    {
+      id: "s5", accent: "var(--teal)",
+      title: { fr: "Éclairage, décor et finitions", en: "Lighting, set dressing and finishing touches" },
+      eyebrow: { fr: "Étape 5", en: "Step 5" },
+      note: { fr: "Après chaque réglage (lumière, moteur de rendu...), vérifie le rendu : icônes de shading en haut à droite (Rendered), ou vue caméra (0 du pavé numérique, Ctrl+Alt+0 pour aligner).",
+              en: "After each setting (light, render engine...), check the render: shading icons top-right (Rendered), or camera view (0 on the numpad, Ctrl+Alt+0 to align)." },
+      items: [
+        { fr: ["Ajouter une lumière Sun (Shift+A > Light > Sun)", "Type de lumière le plus simple à régler"],
+          en: ["Add a Sun light (Shift+A > Light > Sun)", "Simplest light type to set up"] },
+        { fr: ["Orienter le soleil en le faisant glisser/tourner", "Pour que la lumière vienne d'un côté précis"],
+          en: ["Angle the sun by dragging/rotating it", "So the light comes from a specific direction"] },
+        { fr: ["Passer le moteur de rendu de Eevee à Cycles", "Render Properties (icône appareil photo) — plus réaliste mais plus lent"],
+          en: ["Switch the render engine from Eevee to Cycles", "Render Properties (camera icon) — more realistic but slower"] },
+        { fr: ["Ajouter un plan comme sol (Shift+A > Mesh > Plane)", "Le descendre au niveau du verre, puis l'agrandir (S)"],
+          en: ["Add a plane as the ground (Shift+A > Mesh > Plane)", "Move it down to the glass's level, then scale it up (S)"] },
+        { fr: ["Booster la puissance du soleil", "Sélectionner le Sun > icône ampoule (Light) > augmenter Power"],
+          en: ["Boost the sun's power", "Select the Sun > light bulb icon (Light) > increase Power"] },
+        { fr: ["Bonus : ajouter un environnement HDRI (menu déroulant du haut → World)", "Dans l'espace Shading, en haut du panneau de nœuds"],
+          en: ["Bonus: add an HDRI environment (top dropdown → World)", "In the Shading workspace, at the top of the node panel"] },
+        { fr: ["Ajouter un nœud Environment Texture, relier à Color du Background (Shift+A > Search)", "Puis cliquer sur Open pour charger une image HDRI"],
+          en: ["Add an Environment Texture node, connect to the Background's Color (Shift+A > Search)", "Then click Open to load an HDRI image"] },
+        { fr: ["Où trouver des HDRI gratuites ?", "Poly Haven, par exemple — images 360° téléchargeables gratuitement"],
+          en: ["Where to find free HDRIs?", "Poly Haven, for example — free downloadable 360° images"] },
+        { fr: ["Optionnel : supprimer le Sun, l'HDRI éclaire déjà la scène", "Sélectionner le Sun, X pour supprimer"],
+          en: ["Optional: delete the Sun, the HDRI already lights the scene", "Select the Sun, X to delete"] },
+        { fr: ["Si l'eau paraît anguleuse : Shade Smooth, ou Loop Cuts + Inset en Edit Mode", "Le cylindre de l'eau a peu de vertices, moins lissé que le verre par le Subdivision"],
+          en: ["If the water looks blocky: Shade Smooth, or Loop Cuts + Inset in Edit Mode", "The water cylinder has few vertices, less smoothed than the glass by the Subdivision"] },
+        { fr: ["Réafficher tous les objets si besoin (Alt+H), vérifier le rendu final", "En vue Rendered"],
+          en: ["Unhide all objects if needed (Alt+H), check the final render", "In Rendered view"] }
       ]
     }
   ];
@@ -387,10 +482,7 @@
       html += '  </div>';
       html += '  <div class="bc-items">';
       if (section.note) {
-        const isWarn = section.noteType === 'warn';
-        const noteClass = isWarn ? ' warn' : '';
-        const prefix = isWarn ? '' : (t.noteIcon + ' ');
-        html += '  <div class="bc-note' + noteClass + '"><span>' + prefix + escapeHtml(section.note[lang]) + '</span></div>';
+        html += '  <div class="bc-note">' + t.noteIcon + ' <span>' + escapeHtml(section.note[lang]) + '</span></div>';
       }
       section.items.forEach((pair, i) => {
         const text = pair[lang][0];
