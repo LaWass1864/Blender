@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ma première sculpture</title>
+</head>
+<body style="margin:0; padding:24px 12px; background:#F0EDF7; font-family:-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
+<div id="blender-checklist-root"></div>
+<style>
+  #blender-checklist-root {
+    --purple: #5B3A8E;
+    --purple-dark: #3B2760;
+    --teal: #1F8A87;
+    --gold: #C9A227;
+    --cream: #FBF9F5;
+    --ink: #2B2438;
+    --grey: #6E6A78;
+    font-family: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: var(--ink);
+    background: var(--cream);
+    border-radius: 20px;
+    max-width: 760px;
+    margin: 0 auto;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(43,36,56,0.08);
+  }
+
+  .bc-hero {
+    background: linear-gradient(135deg, var(--purple-dark), #4A3170);
+    color: #fff;
+    padding: 28px 28px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .bc-hero::after {
+    content: "";
+    position: absolute;
+    top: -60px; right: -40px;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    background: rgba(201,162,39,0.18);
+  }
+  .bc-lang-toggle {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    display: flex;
+    background: rgba(255,255,255,0.12);
+    border-radius: 999px;
+    padding: 3px;
+    gap: 2px;
+    z-index: 2;
+  }
+  .bc-lang-btn {
+    border: none;
+    background: transparent;
+    color: #D9CFEE;
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 5px 11px;
+    border-radius: 999px;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+  }
+  .bc-lang-btn.active {
+    background: var(--gold);
+    color: var(--purple-dark);
+  }
+  .bc-eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--gold);
+    margin: 0 0 6px;
+    position: relative;
+  }
+  .bc-title {
+    font-size: 24px;
+    font-weight: 800;
+    margin: 0 0 4px;
+    position: relative;
+    padding-right: 90px;
+  }
+  .bc-sub {
+    font-size: 13px;
+    color: #D9CFEE;
+    margin: 0 0 20px;
+    position: relative;
+    max-width: 480px;
+  }
+  .bc-progress-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    position: relative;
+  }
+  .bc-progress-track {
+    flex: 1;
+    height: 10px;
+    background: rgba(255,255,255,0.14);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .bc-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--teal), var(--gold));
+    border-radius: 999px;
+    transition: width 0.4s ease;
+  }
+  .bc-progress-label {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
+    min-width: 70px;
+    text-align: right;
+  }
+
+  .bc-body { padding: 10px 20px 22px; }
+
+  .bc-visual {
+    background: #fff;
+    border: 1px solid #E8E2D8;
+    border-radius: 14px;
+    margin: 16px 20px 0;
+    padding: 12px 8px 6px;
+  }
+  .bc-visual-caption {
+    text-align: center;
+    font-size: 11.5px;
+    color: var(--grey);
+    margin: 2px 0 6px;
+  }
+
+  .bc-section {
+    border: 1px solid #E8E2D8;
+    background: #fff;
+    border-radius: 14px;
+    margin-top: 14px;
+    overflow: hidden;
+  }
+  .bc-section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 14px 16px;
+    cursor: pointer;
+    user-select: none;
+    background: #fff;
+    border-left: 5px solid var(--accent, var(--purple));
+  }
+  .bc-section-head:hover { background: #FBF9F5; }
+  .bc-section-titlewrap { display: flex; flex-direction: column; gap: 2px; }
+  .bc-section-eyebrow {
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--accent, var(--purple));
+  }
+  .bc-section-title {
+    font-size: 15.5px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .bc-section-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .bc-count {
+    font-size: 11.5px;
+    color: var(--grey);
+    white-space: nowrap;
+    min-width: 34px;
+    text-align: right;
+  }
+  .bc-chevron {
+    width: 18px; height: 18px;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+    color: var(--grey);
+  }
+  .bc-section.open .bc-chevron { transform: rotate(180deg); }
+
+  .bc-items {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.25s ease;
+  }
+  .bc-section.open .bc-items { max-height: 3600px; }
+
+  .bc-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 10px 16px 0;
+    padding: 9px 12px;
+    background: rgba(31,138,135,0.08);
+    border: 1px solid rgba(31,138,135,0.35);
+    border-radius: 10px;
+    font-size: 11.8px;
+    line-height: 1.35;
+    color: var(--ink);
+  }
+  .bc-note strong { color: var(--teal); }
+  .bc-note.warn {
+    background: rgba(201,162,39,0.1);
+    border-color: rgba(201,162,39,0.45);
+  }
+
+  .bc-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    padding: 10px 16px 10px 20px;
+    border-top: 1px solid #F1EDE3;
+  }
+  .bc-checkbox {
+    margin-top: 2px;
+    width: 19px; height: 19px;
+    flex-shrink: 0;
+    border-radius: 6px;
+    border: 2px solid #D7CFE6;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  .bc-checkbox.checked {
+    background: var(--accent, var(--purple));
+    border-color: var(--accent, var(--purple));
+  }
+  .bc-checkbox svg { width: 12px; height: 12px; opacity: 0; }
+  .bc-checkbox.checked svg { opacity: 1; }
+  .bc-item-textwrap { cursor: pointer; }
+  .bc-item-text {
+    font-size: 13.3px;
+    line-height: 1.4;
+    color: var(--ink);
+  }
+  .bc-item-hint {
+    font-size: 11.5px;
+    line-height: 1.3;
+    color: var(--accent, var(--purple));
+    margin-top: 3px;
+    opacity: 0.85;
+  }
+  .bc-item-hint::before {
+    content: "📍 ";
+  }
+  .bc-item.done .bc-item-text {
+    color: var(--grey);
+    text-decoration: line-through;
+    text-decoration-color: #C9BFDD;
+  }
+  .bc-item.done .bc-item-hint { opacity: 0.4; }
+
+  .bc-footer {
+    padding: 4px 20px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+  }
+  .bc-reset {
+    font-size: 12px;
+    color: var(--grey);
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 4px;
+  }
+  .bc-savenote {
+    font-size: 11px;
+    color: #A79EC0;
+  }
+</style>
+<script>
+(function () {
+  const UI = {
+    fr: {
+      eyebrow: "Pratique personnelle",
+      title: "Ma première sculpture",
+      sub: "Coche chaque étape, de la sphère de base jusqu'au visage sculpté. Le 📍 indique où trouver l'outil à l'écran.",
+      reset: "Réinitialiser ma progression",
+      saved: "Progression sauvegardée automatiquement",
+      noteIcon: "🔍"
+    },
+    en: {
+      eyebrow: "Personal practice",
+      title: "My first sculpt",
+      sub: "Check off each step, from the base sphere to the sculpted face. The 📍 shows you where to find the tool on screen.",
+      reset: "Reset my progress",
+      saved: "Progress saved automatically",
+      noteIcon: "🔍"
+    }
+  };
+
+  const DATA = [
+    {
+      id: "s1", accent: "var(--gold)",
+      title: { fr: "Préparer la sphère pour la sculpture", en: "Preparing the sphere for sculpting" },
+      eyebrow: { fr: "Étape 1", en: "Step 1" },
+      note: { fr: "Le Sculpt Mode déforme les points déjà présents sur le maillage — il n'en invente pas. Une sphère par défaut n'a pas assez de géométrie pour absorber du détail fin, d'où l'étape du Multiresolution modifier.",
+              en: "Sculpt Mode deforms the points already on the mesh — it doesn't invent new ones. A default sphere doesn't have enough geometry to hold fine detail, hence the Multiresolution modifier step." },
+      items: [
+        { fr: ["Nettoyer la scène si besoin", "1) Clic gauche sur le cube gris, au centre de l'écran — un fin contour orange apparaît autour de lui. 2) Appuie sur la touche X du clavier. 3) Un petit menu s'ouvre pile sous ta souris : clique sur la ligne « Delete »."],
+          en: ["Clear the scene if needed", "1) Left-click the grey cube, centre of the screen — a thin orange outline appears around it. 2) Press the X key. 3) A small menu opens right under your mouse: click the « Delete » line."] },
+        { fr: ["Ajouter une UV Sphere", "1) Place la souris dans la grande zone grise centrale (le viewport), sans cliquer. 2) Appuie sur Maj+A. 3) Un menu vertical s'ouvre à l'endroit de ta souris : descends jusqu'à la ligne « Mesh » et passe la souris dessus (sans cliquer) — un sous-menu s'ouvre à droite. 4) Dans ce sous-menu, clique sur « UV Sphere »."],
+          en: ["Add a UV Sphere", "1) Place the mouse in the large grey central area (the viewport), without clicking. 2) Press Shift+A. 3) A vertical menu opens at your cursor: move down to « Mesh » and hover it (don't click) — a submenu opens to the right. 4) In that submenu, click « UV Sphere »."] },
+        { fr: ["Ouvrir l'onglet Modifiers", "Regarde tout à droite de l'écran : une colonne fine et verticale d'icônes empilées, c'est le panneau Propriétés. Cherche l'icône qui ressemble à une clé à molette bleue — clique dessus une seule fois avec le bouton gauche de la souris."],
+          en: ["Open the Modifiers tab", "Look at the far right of the screen: a thin vertical column of stacked icons, that's the Properties panel. Find the icon that looks like a blue wrench — click it once with the left mouse button."] },
+        { fr: ["Ajouter le modifier Multiresolution", "1) Dans le panneau qui vient de s'ouvrir à gauche de cette colonne d'icônes, clique sur le bouton « Add Modifier » (bandeau bleu, en haut de ce panneau). 2) Un menu déroulant apparaît : clique sur la catégorie « Generate ». 3) Dans la liste qui s'affiche, clique sur « Multiresolution »."],
+          en: ["Add the Multiresolution modifier", "1) In the panel that just opened to the left of that icon column, click the « Add Modifier » button (blue bar, top of that panel). 2) A dropdown appears: click the « Generate » category. 3) In the list that shows up, click « Multiresolution »."] },
+        { fr: ["Cliquer 4 à 5 fois sur le bouton « Subdivide »", "Le modifier Multiresolution apparaît maintenant dans ce même panneau, avec plusieurs boutons côte à côte. Clique sur celui qui s'appelle « Subdivide » — puis reclique dessus 3 à 4 fois de plus, en attendant une petite fraction de seconde entre chaque clic. Chaque clic ajoute un niveau de détail."],
+          en: ["Click the « Subdivide » button 4 to 5 times", "The Multiresolution modifier now appears in that same panel, with several buttons side by side. Click the one labelled « Subdivide » — then click it 3 to 4 more times, waiting a brief moment between each click. Each click adds a level of detail."] },
+        { fr: ["Vérifier le niveau « Sculpt »", "Toujours dans ce panneau du modifier, repère la ligne avec 3 petits champs numériques côte à côte, intitulés « Preview », « Sculpt » et « Render ». Le champ « Sculpt » doit afficher le même chiffre que le nombre de fois où tu as cliqué sur Subdivide — sinon clique dans ce champ et tape la bonne valeur."],
+          en: ["Check the « Sculpt » level", "Still in that modifier panel, find the row with 3 small numeric fields side by side, labelled « Preview », « Sculpt » and « Render ». The « Sculpt » field should show the same number as how many times you clicked Subdivide — if not, click into that field and type the right value."] }
+      ]
+    },
+    {
+      id: "s2", accent: "var(--teal)",
+      title: { fr: "Découvrir le Sculpt Mode", en: "Discovering Sculpt Mode" },
+      eyebrow: { fr: "Étape 2", en: "Step 2" },
+      items: [
+        { fr: ["Passer en Sculpt Mode", "1) Regarde tout en haut à gauche de la fenêtre 3D (le grand espace gris) : un menu déroulant affiche « Object Mode ». Clique dessus une fois. 2) Une liste apparaît juste en dessous : fais défiler jusqu'à tout en bas de la liste et clique sur « Sculpt Mode »."],
+          en: ["Switch to Sculpt Mode", "1) Look at the very top-left of the 3D viewport (the large grey area): a dropdown shows « Object Mode ». Click it once. 2) A list appears just below: scroll to the very bottom of the list and click « Sculpt Mode »."] },
+        { fr: ["Repérer la colonne de pinceaux", "Une fois en Sculpt Mode, regarde tout à gauche de la fenêtre 3D : une colonne verticale de petites icônes est apparue, collée au bord gauche de l'écran. C'est ici que se trouvent tous les pinceaux (Draw, Smooth, Grab...). Passe la souris sur chaque icône sans cliquer pour voir son nom s'afficher."],
+          en: ["Spot the brush column", "Once in Sculpt Mode, look at the far left of the 3D viewport: a vertical column of small icons has appeared, stuck to the left edge of the screen. This is where all the brushes live (Draw, Smooth, Grab...). Hover each icon without clicking to see its name appear."] },
+        { fr: ["Sélectionner le pinceau Draw et l'essayer", "1) Dans cette colonne de gauche, clique une fois sur la 1ère icône tout en haut (elle est sélectionnée par défaut, entourée d'un cadre). 2) Place ta souris sur la sphère grise au centre de l'écran. 3) Maintiens le bouton gauche de la souris enfoncé et déplace la souris lentement : la matière se soulève sous ton passage."],
+          en: ["Select the Draw brush and try it", "1) In that left-hand column, click once on the very top icon (it's selected by default, outlined by a box). 2) Place your mouse over the grey sphere in the centre of the screen. 3) Hold the left mouse button down and move the mouse slowly: the material bulges out where you pass."] },
+        { fr: ["Ajuster la taille du pinceau", "Sans cliquer, maintiens la touche F du clavier enfoncée pendant que ta souris est sur la sphère : un cercle apparaît autour de ton curseur. Bouge la souris pour l'agrandir ou le réduire, puis clique une fois avec le bouton gauche pour valider cette taille."],
+          en: ["Adjust the brush size", "Without clicking, hold the F key while your mouse is over the sphere: a circle appears around your cursor. Move the mouse to grow or shrink it, then left-click once to confirm that size."] },
+        { fr: ["Ajuster la force du pinceau", "Même geste que pour la taille, mais avec Maj+F maintenues ensemble cette fois. Un indicateur de force apparaît près du curseur pendant que tu bouges la souris — clic gauche pour valider."],
+          en: ["Adjust the brush strength", "Same gesture as for size, but with Shift+F held together this time. A strength indicator appears near the cursor as you move the mouse — left-click to confirm."] },
+        { fr: ["Essayer l'effet inversé (creuser)", "Place la souris sur la sphère, maintiens la touche Ctrl du clavier enfoncée, puis maintiens aussi le bouton gauche de la souris et déplace-la : au lieu de bomber, la matière se creuse vers l'intérieur."],
+          en: ["Try the inverted effect (hollowing)", "Place the mouse over the sphere, hold the Ctrl key, then also hold the left mouse button and move it: instead of bulging out, the material caves inward."] },
+        { fr: ["Essayer le pinceau Smooth", "1) Dans la colonne d'icônes à gauche, descends un peu plus bas jusqu'à trouver l'icône Smooth (survole chaque icône pour lire son nom si besoin) et clique dessus. 2) Passe-le sur une zone bosselée de la sphère pour l'adoucir. Astuce : avec n'importe quel autre pinceau sélectionné, maintenir la touche Maj active aussi temporairement le lissage, sans changer d'icône."],
+          en: ["Try the Smooth brush", "1) In the left icon column, scroll down a bit until you find the Smooth icon (hover each icon to read its name if needed) and click it. 2) Pass it over a bumpy area of the sphere to soften it. Tip: with any other brush selected, holding Shift also temporarily activates smoothing, without switching icons."] },
+        { fr: ["Activer la symétrie X", "Regarde tout en haut de la fenêtre 3D, dans la fine barre horizontale juste sous les onglets (Layout, Modelling...) : c'est la barre des réglages de l'outil actif. Tout à droite de cette barre, 3 petites lettres X / Y / Z sont affichées côte à côte. Clique une seule fois sur le X pour l'activer (il doit s'allumer/se surligner)."],
+          en: ["Turn on X symmetry", "Look at the very top of the 3D viewport, in the thin horizontal bar just under the tabs (Layout, Modelling...): that's the active tool's settings bar. On the far right of that bar, 3 small letters X / Y / Z are shown side by side. Click the X once to enable it (it should light up/highlight)."] }
+      ]
+    },
+    {
+      id: "s3", accent: "var(--purple)",
+      title: { fr: "Sculpter un visage simple", en: "Sculpting a simple face" },
+      eyebrow: { fr: "Étape 3", en: "Step 3" },
+      note: { fr: "Pas besoin de viser le réalisme : l'objectif est de manipuler les 4-5 pinceaux de base sur une forme concrète.",
+              en: "No need to aim for realism: the goal is to handle the 4-5 basic brushes on a concrete shape." },
+      items: [
+        { fr: ["Creuser 2 orbites pour les yeux", "1) Reclique sur la 1ère icône tout en haut de la colonne de gauche (le pinceau Draw). 2) Positionne la souris sur le haut de la sphère, côté droit. 3) Maintiens Ctrl, puis maintiens le bouton gauche de la souris et trace un petit cercle : un creux apparaît. 4) Grâce à la symétrie X déjà activée, un 2e creux identique apparaît automatiquement de l'autre côté, sans rien refaire."],
+          en: ["Hollow out 2 eye sockets", "1) Click the very top icon in the left column again (the Draw brush). 2) Position the mouse on the upper half of the sphere, right side. 3) Hold Ctrl, then hold the left mouse button and trace a small circle: a hollow appears. 4) Thanks to the X symmetry already on, an identical 2nd hollow appears automatically on the other side, with nothing extra to do."] },
+        { fr: ["Faire ressortir 2 pommettes ou un nez", "1) Dans la colonne de gauche, clique sur l'icône Inflate (survole les icônes pour repérer son nom si besoin — elle se trouve généralement après Draw et avant Smooth). 2) Passe-le, sans Ctrl cette fois, sur la zone sous les yeux pour faire légèrement bomber la matière."],
+          en: ["Bring out 2 cheekbones or a nose", "1) In the left column, click the Inflate icon (hover the icons to spot its name if needed — it's usually located after Draw and before Smooth). 2) Pass it, without Ctrl this time, over the area under the eyes to gently puff the material out."] },
+        { fr: ["Tracer une ligne de bouche", "1) Clique sur l'icône Crease dans la colonne de gauche (un peu plus bas que Inflate). 2) Trace un seul trait horizontal, d'un geste continu, sous le nez : ça crée un sillon net en une seule fois — évite de repasser plusieurs fois au même endroit."],
+          en: ["Trace a mouth line", "1) Click the Crease icon in the left column (a bit further down than Inflate). 2) Draw a single horizontal stroke, in one continuous motion, under the nose: this creates a crisp groove in one go — avoid going over the same spot multiple times."] },
+        { fr: ["Adoucir les transitions", "Reclique sur l'icône Smooth (ou maintiens simplement Maj avec le pinceau actuel), et repasse doucement sur les zones qui te semblent trop anguleuses, jusqu'à ce que les formes paraissent plus rondes et naturelles."],
+          en: ["Soften the transitions", "Click the Smooth icon again (or simply hold Shift with the current brush), and gently go over areas that look too angular, until the shapes feel rounder and more natural."] },
+        { fr: ["Explorer librement 5 minutes avec les autres pinceaux", "Dans la même colonne de gauche, essaie tour à tour : Grab (clique-glisse pour déplacer toute une zone d'un coup), Pinch (pince la matière vers un point), Clay Strips (ajoute de la matière en bandes épaisses). Chaque icône a un effet très différent — le seul moyen de comprendre lequel est de l'essayer directement sur la sphère."],
+          en: ["Freely explore for 5 minutes with the other brushes", "In that same left column, try in turn: Grab (click-drag to move a whole area at once), Pinch (pinches material toward a point), Clay Strips (adds material in thick strips). Each icon behaves very differently — the only way to understand which is to try it directly on the sphere."] }
+      ]
+    },
+    {
+      id: "s4", accent: "var(--teal)",
+      title: { fr: "Finitions", en: "Finishing touches" },
+      eyebrow: { fr: "Étape 4", en: "Step 4" },
+      items: [
+        { fr: ["Revenir en Object Mode", "Clique sur le menu déroulant tout en haut à gauche de la fenêtre 3D (celui qui affiche « Sculpt Mode ») et choisis « Object Mode » tout en haut de la liste cette fois."],
+          en: ["Go back to Object Mode", "Click the dropdown at the very top-left of the 3D viewport (the one showing « Sculpt Mode ») and pick « Object Mode » at the very top of the list this time."] },
+        { fr: ["Vérifier Shade Smooth", "1) Vérifie que la sphère est bien sélectionnée (contour orange) — sinon clique dessus une fois. 2) Clique avec le bouton droit de la souris n'importe où sur la sphère. 3) Dans le menu qui s'ouvre, clique sur « Shade Smooth »."],
+          en: ["Check Shade Smooth", "1) Make sure the sphere is selected (orange outline) — if not, click it once. 2) Right-click anywhere on the sphere. 3) In the menu that opens, click « Shade Smooth »."] },
+        { fr: ["Ajouter un matériau", "1) Dans la colonne verticale d'icônes à droite de l'écran, clique sur l'icône ronde à damier rouge/blanc/gris (Material Properties). 2) Dans le panneau qui s'ouvre à gauche de cette colonne, clique sur le bouton « New ». 3) Clique sur le rectangle de couleur « Base Color » pour choisir une teinte."],
+          en: ["Add a material", "1) In the vertical icon column on the right of the screen, click the round red/white/grey checkered icon (Material Properties). 2) In the panel that opens to the left of that column, click the « New » button. 3) Click the « Base Color » colour swatch to pick a shade."] },
+        { fr: ["Ajouter une lumière et une caméra si besoin", "1) Souris dans le viewport, Maj+A, survole « Light », clique sur « Point » ou « Area ». 2) Refais Maj+A, clique cette fois directement sur « Camera » (tout en bas de la liste principale, pas dans un sous-menu)."],
+          en: ["Add a light and a camera if needed", "1) Mouse in the viewport, Shift+A, hover « Light », click « Point » or « Area ». 2) Do Shift+A again, this time click directly on « Camera » (at the very bottom of the main list, not in a submenu)."] },
+        { fr: ["Passer en aperçu Matériau", "Tout en haut à droite de la fenêtre 3D, repère une rangée de 4 petites sphères côte à côte. Clique sur la 3e en partant de la gauche (celle qui a un dégradé de lumière visible dessus)."],
+          en: ["Switch to Material Preview", "At the very top-right of the 3D viewport, spot a row of 4 small spheres side by side. Click the 3rd one from the left (the one with a visible light gradient on it)."] },
+        { fr: ["Sauvegarder le fichier", "Appuie sur Ctrl+S (Cmd+S sur Mac). Au tout premier enregistrement, une fenêtre s'ouvre : choisis un dossier, tape un nom de fichier dans le champ en bas, puis clique sur le bouton « Save As Blender File » en haut à droite de cette fenêtre."],
+          en: ["Save the file", "Press Ctrl+S (Cmd+S on Mac). On the very first save, a window opens: choose a folder, type a filename in the field at the bottom, then click « Save As Blender File » top-right of that window."] },
+        { fr: ["Lancer le rendu final", "Appuie sur la touche F12 — ou, en haut de l'écran, clique sur « Render » puis, dans le menu déroulant, clique sur « Render Image »."],
+          en: ["Launch the final render", "Press the F12 key — or, at the top of the screen, click « Render » then, in the dropdown, click « Render Image »."] }
+      ]
+    }
+  ];
+
+  const STORAGE_KEY = "blender-sculpt-checklist-progress";
+  const LANG_KEY = "blender-sculpt-checklist-progress-lang";
+  let state = {};
+  let lang = "fr";
+
+  const root = document.getElementById("blender-checklist-root");
+
+  function totalItems() {
+    return DATA.reduce((acc, s) => acc + s.items.length, 0);
+  }
+  function checkedCount() {
+    return Object.values(state).filter(Boolean).length;
+  }
+
+  function checkIcon() {
+    return '<svg viewBox="0 0 16 16" fill="none"><path d="M3 8.5L6.2 11.5L13 4.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  }
+  function chevronIcon() {
+    return '<svg class="bc-chevron" viewBox="0 0 20 20" fill="none"><path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function render() {
+    const t = UI[lang];
+    const total = totalItems();
+    const done = checkedCount();
+    const pct = total ? Math.round((done / total) * 100) : 0;
+
+    let html = '';
+    html += '<div class="bc-hero">';
+    html += '  <div class="bc-lang-toggle">';
+    html += '    <button class="bc-lang-btn' + (lang === 'fr' ? ' active' : '') + '" data-lang="fr">FR</button>';
+    html += '    <button class="bc-lang-btn' + (lang === 'en' ? ' active' : '') + '" data-lang="en">EN</button>';
+    html += '  </div>';
+    html += '  <p class="bc-eyebrow">' + t.eyebrow + '</p>';
+    html += '  <h1 class="bc-title">' + t.title + '</h1>';
+    html += '  <p class="bc-sub">' + t.sub + '</p>';
+    html += '  <div class="bc-progress-row">';
+    html += '    <div class="bc-progress-track"><div class="bc-progress-fill" style="width:' + pct + '%"></div></div>';
+    html += '    <div class="bc-progress-label">' + done + ' / ' + total + '</div>';
+    html += '  </div>';
+    html += '</div>';
+
+    html += '<div class="bc-visual">';
+    html += '<svg width="100%" viewBox="0 0 680 260" role="img" aria-label="Avant/après de la sphère sculptée">';
+    html += '<circle cx="180" cy="130" r="80" fill="var(--gold)" opacity="0.85"/>';
+    html += '<text x="180" y="230" font-size="12" fill="var(--grey)" text-anchor="middle">Sphère + Multiresolution</text>';
+    html += '<line x1="320" y1="130" x2="380" y2="130" stroke="var(--grey)" stroke-width="1.5" marker-end="url(#arrowh)"/>';
+    html += '<defs><marker id="arrowh" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="var(--grey)" stroke-width="1.5"/></marker></defs>';
+    html += '<circle cx="500" cy="130" r="80" fill="var(--teal)" opacity="0.85"/>';
+    html += '<circle cx="472" cy="115" r="9" fill="var(--purple)"/>';
+    html += '<circle cx="528" cy="115" r="9" fill="var(--purple)"/>';
+    html += '<ellipse cx="500" cy="145" rx="10" ry="6" fill="var(--purple)"/>';
+    html += '<path d="M478 168 Q500 180 522 168" stroke="var(--purple)" stroke-width="3" fill="none" stroke-linecap="round"/>';
+    html += '<text x="500" y="230" font-size="12" fill="var(--grey)" text-anchor="middle">Après Sculpt Mode</text>';
+    html += '</svg>';
+    html += '<p class="bc-visual-caption">' + (lang === 'fr' ? 'Objectif approximatif — le style et les proportions restent libres' : 'Rough target — style and proportions are yours to choose') + '</p>';
+    html += '</div>';
+
+    html += '<div class="bc-body">';
+    DATA.forEach((section) => {
+      const sectionDone = section.items.filter((_, i) => state[section.id + '-' + i]).length;
+      const isOpen = section._open !== false;
+      html += '<div class="bc-section' + (isOpen ? ' open' : '') + '" data-section="' + section.id + '" style="--accent:' + section.accent + '">';
+      html += '  <div class="bc-section-head" data-toggle="' + section.id + '">';
+      html += '    <div class="bc-section-titlewrap">';
+      html += '      <span class="bc-section-eyebrow">' + section.eyebrow[lang] + '</span>';
+      html += '      <span class="bc-section-title">' + section.title[lang] + '</span>';
+      html += '    </div>';
+      html += '    <div class="bc-section-right">';
+      html += '      <span class="bc-count">' + sectionDone + '/' + section.items.length + '</span>';
+      html += chevronIcon();
+      html += '    </div>';
+      html += '  </div>';
+      html += '  <div class="bc-items">';
+      if (section.note) {
+        html += '  <div class="bc-note">' + t.noteIcon + ' <span>' + escapeHtml(section.note[lang]) + '</span></div>';
+      }
+      section.items.forEach((pair, i) => {
+        const text = pair[lang][0];
+        const hint = pair[lang][1];
+        const itemId = section.id + '-' + i;
+        const checked = !!state[itemId];
+        html += '<div class="bc-item' + (checked ? ' done' : '') + '" data-item="' + itemId + '">';
+        html += '  <div class="bc-checkbox' + (checked ? ' checked' : '') + '">' + checkIcon() + '</div>';
+        html += '  <div class="bc-item-textwrap">';
+        html += '    <div class="bc-item-text">' + escapeHtml(text) + '</div>';
+        if (hint) {
+          html += '    <div class="bc-item-hint">' + escapeHtml(hint) + '</div>';
+        }
+        html += '  </div>';
+        html += '</div>';
+      });
+      html += '  </div>';
+      html += '</div>';
+    });
+    html += '</div>';
+
+    html += '<div class="bc-footer">';
+    html += '  <button class="bc-reset" data-reset="1">' + t.reset + '</button>';
+    html += '  <span class="bc-savenote">' + t.saved + '</span>';
+    html += '</div>';
+
+    root.innerHTML = html;
+    attachHandlers();
+  }
+
+  function attachHandlers() {
+    root.querySelectorAll('[data-toggle]').forEach((el) => {
+      el.addEventListener('click', () => {
+        const id = el.getAttribute('data-toggle');
+        const section = DATA.find((s) => s.id === id);
+        section._open = section._open === false ? true : false;
+        render();
+      });
+    });
+    root.querySelectorAll('[data-item]').forEach((el) => {
+      el.addEventListener('click', () => {
+        const id = el.getAttribute('data-item');
+        state[id] = !state[id];
+        render();
+        persist();
+      });
+    });
+    root.querySelectorAll('[data-lang]').forEach((el) => {
+      el.addEventListener('click', () => {
+        lang = el.getAttribute('data-lang');
+        render();
+        persistLang();
+      });
+    });
+    const resetBtn = root.querySelector('[data-reset]');
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        state = {};
+        render();
+        persist();
+      });
+    }
+  }
+
+  function persist() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (e) {
+      console.error('Impossible de sauvegarder la progression', e);
+    }
+  }
+
+  function persistLang() {
+    try {
+      localStorage.setItem(LANG_KEY, lang);
+    } catch (e) {
+      console.error('Impossible de sauvegarder la langue', e);
+    }
+  }
+
+  function load() {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) { state = JSON.parse(saved); }
+    } catch (e) {
+      state = {};
+    }
+    try {
+      const savedLang = localStorage.getItem(LANG_KEY);
+      if (savedLang) { lang = savedLang; }
+    } catch (e) {
+      lang = "fr";
+    }
+    render();
+  }
+
+  load();
+})();
+</script>
+
+</body>
+</html>
