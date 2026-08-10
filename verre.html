@@ -270,6 +270,20 @@
   .bc-item-warn::before {
     content: "⚠️ ";
   }
+  .bc-item-confirm {
+    font-size: 11.8px;
+    line-height: 1.42;
+    color: var(--ink);
+    margin-top: 6px;
+    padding: 7px 10px;
+    background: rgba(31,138,135,0.07);
+    border-left: 3px solid var(--purple);
+    border-radius: 4px;
+    opacity: 0.92;
+  }
+  .bc-item-confirm::before {
+    content: "✅ ";
+  }
   .bc-item.done .bc-item-text {
     color: var(--grey);
     text-decoration: line-through;
@@ -278,6 +292,7 @@
   .bc-item.done .bc-item-hint { opacity: 0.4; }
   .bc-item.done .bc-item-why { opacity: 0.4; }
   .bc-item.done .bc-item-warn { opacity: 0.4; }
+  .bc-item.done .bc-item-confirm { opacity: 0.4; }
 
   .bc-footer {
     padding: 4px 20px 20px;
@@ -372,22 +387,36 @@
           en: ["Switch back to Edit Mode, select the glass's inner bottom (the one hollowed out in Step 1): Inset twice (I, I)", "2x Inset tightens the edges around the bottom, which stops the Subdivision Surface from rounding it into a dome — like a paper crease pressed twice"] },
         { fr: ["Loop Cut sur les arêtes verticales, glisser vers le bas pour aplatir la base (Ctrl/Cmd+R)", "Réduit l'effet trop sphérique du Subdivision en dessous",
                "Sans rien pour la retenir, la base du verre gonflerait comme un ballon sous l'effet du Subdivision Surface, qui arrondit tout par défaut. En ajoutant une boucle d'arêtes juste à côté du bord inférieur, tu donnes au Subdivision un point d'appui proche : les faces entre cette boucle et le bord n'ont presque plus de place pour s'arrondir, donc la base reste plate.",
-               "Erreur fréquente : survoler une arête sans appuyer sur Ctrl+R ne fait apparaître qu'une fine ligne verticale unique (simple surbrillance) — ce n'est pas un Loop Cut. Et Ctrl+A ou A sélectionnent tout l'objet (tout devient orange), ce n'est pas ça non plus. Le vrai Loop Cut se reconnaît à un anneau jaune horizontal complet qui fait tout le tour du cylindre dès que tu maintiens Ctrl+R avec la souris sur le côté de l'objet, avant même de cliquer."],
+               "Erreur fréquente : survoler une arête sans appuyer sur Ctrl+R ne fait apparaître qu'une fine ligne verticale unique (simple surbrillance) — ce n'est pas un Loop Cut. Et Ctrl+A ou A sélectionnent tout l'objet (tout devient orange), ce n'est pas ça non plus. Le vrai Loop Cut se reconnaît à un anneau jaune horizontal complet qui fait tout le tour du cylindre dès que tu maintiens Ctrl+R avec la souris sur le côté de l'objet, avant même de cliquer.",
+               "Après le 1er clic gauche, tu dois voir 2 anneaux distincts : une ligne noire fixe (déjà créée) et une ligne jaune qui suit encore ta souris — et le petit panneau en bas à gauche du viewport affiche « Loop Cut and Slide ». C'est le signal que tu es au bon endroit. Bouge la souris pour glisser cet anneau (vers le bas pour la 1ère coupe), puis 2e clic gauche pour valider sa position. Pour une valeur précise plutôt qu'à l'œil : déplie ce panneau « Loop Cut and Slide » et tape une valeur dans le champ Factor (ex. -0.9)."],
           en: ["Loop Cut on the vertical edges, slide down to flatten the base (Ctrl/Cmd+R)", "Reduces the overly spherical effect of the Subdivision underneath",
                "Without anything to hold it back, the glass's base would balloon out under the Subdivision Surface, which rounds everything by default. Adding a loop of edges close to the bottom border gives the Subdivision a nearby anchor point: the faces between that loop and the border barely have room to round off, so the base stays flat.",
-               "Common mistake: hovering an edge without pressing Ctrl+R only shows a single thin vertical line (plain highlight) — that's not a Loop Cut. And Ctrl+A or A select the whole object (everything turns orange), that's not it either. A real Loop Cut shows as a complete horizontal yellow ring going all the way around the cylinder as soon as you hold Ctrl+R with the mouse over the side of the object, even before clicking."] },
+               "Common mistake: hovering an edge without pressing Ctrl+R only shows a single thin vertical line (plain highlight) — that's not a Loop Cut. And Ctrl+A or A select the whole object (everything turns orange), that's not it either. A real Loop Cut shows as a complete horizontal yellow ring going all the way around the cylinder as soon as you hold Ctrl+R with the mouse over the side of the object, even before clicking.",
+               "After the first left-click, you should see 2 distinct rings: a fixed black line (already created) and a yellow line still following your mouse — and the small panel bottom-left of the viewport shows « Loop Cut and Slide ». That confirms you're on the right track. Move the mouse to slide that ring (downward for this first cut), then left-click again to confirm its position. For a precise value instead of eyeballing it: expand that « Loop Cut and Slide » panel and type a value in the Factor field (e.g. -0.9)."] },
         { fr: ["Loop Cut près du haut, glisser vers le haut (Ctrl/Cmd+R)", "Même geste, côté opposé",
-               "Même logique, côté opposé. Sans cette boucle, le bord supérieur du verre (le rebord où on boit) serait lui aussi aspiré vers l'intérieur par l'arrondi du Subdivision, et le verre perdrait son ouverture nette. Cette coupe garde le rebord droit et net."],
+               "Même logique, côté opposé. Sans cette boucle, le bord supérieur du verre (le rebord où on boit) serait lui aussi aspiré vers l'intérieur par l'arrondi du Subdivision, et le verre perdrait son ouverture nette. Cette coupe garde le rebord droit et net.",
+               null,
+               "Même méthode de validation que le 1er Loop Cut : 1er clic pour créer l'anneau (2 lignes visibles + panneau « Loop Cut and Slide » en bas à gauche), glisser vers le haut cette fois, 2e clic pour valider."],
           en: ["Loop Cut near the top, slide up (Ctrl/Cmd+R)", "Same gesture, opposite side",
-               "Same logic, opposite side. Without this loop, the glass's top rim (where you'd drink from) would also get pulled inward by the Subdivision's rounding, and the glass would lose its clean opening. This cut keeps the rim straight and crisp."] },
+               "Same logic, opposite side. Without this loop, the glass's top rim (where you'd drink from) would also get pulled inward by the Subdivision's rounding, and the glass would lose its clean opening. This cut keeps the rim straight and crisp.",
+               null,
+               "Same confirmation method as the first Loop Cut: 1st click creates the ring (2 visible lines + « Loop Cut and Slide » panel bottom-left), slide upward this time, 2nd click to confirm."] },
         { fr: ["Loop Cut à l'intérieur, glisser vers le haut pour l'épaisseur (Ctrl/Cmd+R)", "Sur les arêtes intérieures du verre",
-               "À ce stade, le verre a déjà une paroi intérieure (le creux dans lequel on verserait un liquide). Cette boucle contrôle l'épaisseur du bord supérieur de cette paroi intérieure, pour qu'elle reste régulière une fois lissée, plutôt que de s'amincir ou se déformer sous le Subdivision."],
+               "À ce stade, le verre a déjà une paroi intérieure (le creux dans lequel on verserait un liquide). Cette boucle contrôle l'épaisseur du bord supérieur de cette paroi intérieure, pour qu'elle reste régulière une fois lissée, plutôt que de s'amincir ou se déformer sous le Subdivision.",
+               null,
+               "Même méthode de validation : 1er clic pour créer l'anneau, glisser légèrement, 2e clic pour valider. Cette fois l'anneau se trouve sur la paroi intérieure du verre, pas sur l'extérieur — vérifie bien que tu as sélectionné une arête intérieure avant Ctrl+R."],
           en: ["Loop Cut on the inside, slide up for thickness (Ctrl/Cmd+R)", "On the glass's inner edges",
-               "At this stage, the glass already has an inner wall (the hollow you'd pour a liquid into). This loop controls the thickness of that inner wall's top edge, so it stays even once smoothed, rather than thinning out or warping under the Subdivision."] },
+               "At this stage, the glass already has an inner wall (the hollow you'd pour a liquid into). This loop controls the thickness of that inner wall's top edge, so it stays even once smoothed, rather than thinning out or warping under the Subdivision.",
+               null,
+               "Same confirmation method: 1st click creates the ring, slide slightly, 2nd click to confirm. This time the ring sits on the glass's inner wall, not the outer one — make sure you're hovering an inner edge before Ctrl+R."] },
         { fr: ["Loop Cut en bas à l'intérieur, réduire légèrement (Ctrl/Cmd+R)", "Finalise l'épaisseur du fond",
-               "Même principe, mais pour le fond intérieur du verre. Cette dernière coupe fixe l'épaisseur du fond une fois pour toutes, pour que le lissage final ne la fasse pas disparaître ou trop s'amincir — c'est ce qui termine proprement la double paroi du verre (extérieure + intérieure)."],
+               "Même principe, mais pour le fond intérieur du verre. Cette dernière coupe fixe l'épaisseur du fond une fois pour toutes, pour que le lissage final ne la fasse pas disparaître ou trop s'amincir — c'est ce qui termine proprement la double paroi du verre (extérieure + intérieure).",
+               null,
+               "Dernière application de la même méthode : 1er clic pour créer l'anneau, glisser (réduire légèrement, donc un tout petit mouvement), 2e clic pour valider. Si le mouvement te semble trop sensible à la souris, ouvre le panneau « Loop Cut and Slide » en bas à gauche et tape une petite valeur dans Factor plutôt qu'à l'œil."],
           en: ["Loop Cut at the bottom inside, reduce slightly (Ctrl/Cmd+R)", "Finalises the bottom's thickness",
-               "Same idea, but for the glass's inner bottom. This last cut locks in the bottom's thickness for good, so the final smoothing doesn't make it vanish or get too thin — it's what neatly finishes off the glass's double wall (outer + inner)."] },
+               "Same idea, but for the glass's inner bottom. This last cut locks in the bottom's thickness for good, so the final smoothing doesn't make it vanish or get too thin — it's what neatly finishes off the glass's double wall (outer + inner).",
+               null,
+               "Last application of the same method: 1st click creates the ring, slide it (reduce slightly, so a very small movement), 2nd click to confirm. If the mouse feels too sensitive, open the « Loop Cut and Slide » panel bottom-left and type a small value in Factor instead of eyeballing it."] },
         { fr: ["Sélectionner la face du dessous, Inset deux fois pour l'aplatir (Face mode 3, puis I, I)", "Évite un fond trop arrondi par le Subdivision"],
           en: ["Select the bottom face, Inset twice to flatten it (Face mode 3, then I, I)", "Avoids a bottom that's too rounded by the Subdivision"] },
         { fr: ["Lisser l'objet entier (clic droit > Shade Smooth)", "Dernière touche de finition sur le verre"],
@@ -547,6 +576,7 @@
         const hint = pair[lang][1];
         const why = pair[lang][2];
         const warn = pair[lang][3];
+        const confirm = pair[lang][4];
         const itemId = section.id + '-' + i;
         const checked = !!state[itemId];
         html += '<div class="bc-item' + (checked ? ' done' : '') + '" data-item="' + itemId + '">';
@@ -561,6 +591,9 @@
         }
         if (warn) {
           html += '    <div class="bc-item-warn">' + escapeHtml(warn) + '</div>';
+        }
+        if (confirm) {
+          html += '    <div class="bc-item-confirm">' + escapeHtml(confirm) + '</div>';
         }
         html += '  </div>';
         html += '</div>';
