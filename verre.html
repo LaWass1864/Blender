@@ -179,7 +179,7 @@
     overflow: hidden;
     transition: max-height 0.25s ease;
   }
-  .bc-section.open .bc-items { max-height: 2200px; }
+  .bc-section.open .bc-items { max-height: 3200px; }
 
   .bc-note {
     display: flex;
@@ -242,12 +242,27 @@
   .bc-item-hint::before {
     content: "📍 ";
   }
+  .bc-item-why {
+    font-size: 11.8px;
+    line-height: 1.42;
+    color: var(--ink);
+    margin-top: 6px;
+    padding: 7px 10px;
+    background: rgba(31,138,135,0.07);
+    border-left: 3px solid var(--teal);
+    border-radius: 4px;
+    opacity: 0.92;
+  }
+  .bc-item-why::before {
+    content: "💡 ";
+  }
   .bc-item.done .bc-item-text {
     color: var(--grey);
     text-decoration: line-through;
     text-decoration-color: #C9BFDD;
   }
   .bc-item.done .bc-item-hint { opacity: 0.4; }
+  .bc-item.done .bc-item-why { opacity: 0.4; }
 
   .bc-footer {
     padding: 4px 20px 20px;
@@ -276,7 +291,7 @@
     fr: {
       eyebrow: "Pratique personnelle",
       title: "Mon verre d'eau",
-      sub: "Coche chaque étape en suivant la transcription complète du tuto. Le 📍 indique où trouver l'outil à l'écran.",
+      sub: "Coche chaque étape en suivant la transcription complète du tuto. Le 📍 indique où trouver l'outil à l'écran, le 💡 explique pourquoi on fait ce geste.",
       reset: "Réinitialiser ma progression",
       saved: "Progression sauvegardée automatiquement",
       noteIcon: "🔍"
@@ -284,7 +299,7 @@
     en: {
       eyebrow: "Personal practice",
       title: "My glass of water",
-      sub: "Check off each step while following the tutorial's full transcript. The 📍 shows you where to find the tool on screen.",
+      sub: "Check off each step while following the tutorial's full transcript. The 📍 shows you where to find the tool on screen, the 💡 explains why you're doing this.",
       reset: "Reset my progress",
       saved: "Progress saved automatically",
       noteIcon: "🔍"
@@ -340,14 +355,22 @@
           en: ["Increase the Subdivision Surface level to 3", "Levels Viewport field in the modifier"] },
         { fr: ["Repasser en Edit Mode, sélectionner le fond intérieur du verre (celui creusé à l'Étape 1) : Inset deux fois (I, I)", "2x Inset resserre les arêtes autour du fond, ce qui empêche le Subdivision Surface de l'arrondir en bosse — comme un pli de papier repassé deux fois"],
           en: ["Switch back to Edit Mode, select the glass's inner bottom (the one hollowed out in Step 1): Inset twice (I, I)", "2x Inset tightens the edges around the bottom, which stops the Subdivision Surface from rounding it into a dome — like a paper crease pressed twice"] },
-        { fr: ["Loop Cut sur les arêtes verticales, glisser vers le bas pour aplatir la base (Ctrl/Cmd+R)", "Réduit l'effet trop sphérique du Subdivision en dessous"],
-          en: ["Loop Cut on the vertical edges, slide down to flatten the base (Ctrl/Cmd+R)", "Reduces the overly spherical effect of the Subdivision underneath"] },
-        { fr: ["Loop Cut près du haut, glisser vers le haut (Ctrl/Cmd+R)", "Même geste, côté opposé"],
-          en: ["Loop Cut near the top, slide up (Ctrl/Cmd+R)", "Same gesture, opposite side"] },
-        { fr: ["Loop Cut à l'intérieur, glisser vers le haut pour l'épaisseur (Ctrl/Cmd+R)", "Sur les arêtes intérieures du verre"],
-          en: ["Loop Cut on the inside, slide up for thickness (Ctrl/Cmd+R)", "On the glass's inner edges"] },
-        { fr: ["Loop Cut en bas à l'intérieur, réduire légèrement (Ctrl/Cmd+R)", "Finalise l'épaisseur du fond"],
-          en: ["Loop Cut at the bottom inside, reduce slightly (Ctrl/Cmd+R)", "Finalises the bottom's thickness"] },
+        { fr: ["Loop Cut sur les arêtes verticales, glisser vers le bas pour aplatir la base (Ctrl/Cmd+R)", "Réduit l'effet trop sphérique du Subdivision en dessous",
+               "Sans rien pour la retenir, la base du verre gonflerait comme un ballon sous l'effet du Subdivision Surface, qui arrondit tout par défaut. En ajoutant une boucle d'arêtes juste à côté du bord inférieur, tu donnes au Subdivision un point d'appui proche : les faces entre cette boucle et le bord n'ont presque plus de place pour s'arrondir, donc la base reste plate."],
+          en: ["Loop Cut on the vertical edges, slide down to flatten the base (Ctrl/Cmd+R)", "Reduces the overly spherical effect of the Subdivision underneath",
+               "Without anything to hold it back, the glass's base would balloon out under the Subdivision Surface, which rounds everything by default. Adding a loop of edges close to the bottom border gives the Subdivision a nearby anchor point: the faces between that loop and the border barely have room to round off, so the base stays flat."] },
+        { fr: ["Loop Cut près du haut, glisser vers le haut (Ctrl/Cmd+R)", "Même geste, côté opposé",
+               "Même logique, côté opposé. Sans cette boucle, le bord supérieur du verre (le rebord où on boit) serait lui aussi aspiré vers l'intérieur par l'arrondi du Subdivision, et le verre perdrait son ouverture nette. Cette coupe garde le rebord droit et net."],
+          en: ["Loop Cut near the top, slide up (Ctrl/Cmd+R)", "Same gesture, opposite side",
+               "Same logic, opposite side. Without this loop, the glass's top rim (where you'd drink from) would also get pulled inward by the Subdivision's rounding, and the glass would lose its clean opening. This cut keeps the rim straight and crisp."] },
+        { fr: ["Loop Cut à l'intérieur, glisser vers le haut pour l'épaisseur (Ctrl/Cmd+R)", "Sur les arêtes intérieures du verre",
+               "À ce stade, le verre a déjà une paroi intérieure (le creux dans lequel on verserait un liquide). Cette boucle contrôle l'épaisseur du bord supérieur de cette paroi intérieure, pour qu'elle reste régulière une fois lissée, plutôt que de s'amincir ou se déformer sous le Subdivision."],
+          en: ["Loop Cut on the inside, slide up for thickness (Ctrl/Cmd+R)", "On the glass's inner edges",
+               "At this stage, the glass already has an inner wall (the hollow you'd pour a liquid into). This loop controls the thickness of that inner wall's top edge, so it stays even once smoothed, rather than thinning out or warping under the Subdivision."] },
+        { fr: ["Loop Cut en bas à l'intérieur, réduire légèrement (Ctrl/Cmd+R)", "Finalise l'épaisseur du fond",
+               "Même principe, mais pour le fond intérieur du verre. Cette dernière coupe fixe l'épaisseur du fond une fois pour toutes, pour que le lissage final ne la fasse pas disparaître ou trop s'amincir — c'est ce qui termine proprement la double paroi du verre (extérieure + intérieure)."],
+          en: ["Loop Cut at the bottom inside, reduce slightly (Ctrl/Cmd+R)", "Finalises the bottom's thickness",
+               "Same idea, but for the glass's inner bottom. This last cut locks in the bottom's thickness for good, so the final smoothing doesn't make it vanish or get too thin — it's what neatly finishes off the glass's double wall (outer + inner)."] },
         { fr: ["Sélectionner la face du dessous, Inset deux fois pour l'aplatir (Face mode 3, puis I, I)", "Évite un fond trop arrondi par le Subdivision"],
           en: ["Select the bottom face, Inset twice to flatten it (Face mode 3, then I, I)", "Avoids a bottom that's too rounded by the Subdivision"] },
         { fr: ["Lisser l'objet entier (clic droit > Shade Smooth)", "Dernière touche de finition sur le verre"],
@@ -505,6 +528,7 @@
       section.items.forEach((pair, i) => {
         const text = pair[lang][0];
         const hint = pair[lang][1];
+        const why = pair[lang][2];
         const itemId = section.id + '-' + i;
         const checked = !!state[itemId];
         html += '<div class="bc-item' + (checked ? ' done' : '') + '" data-item="' + itemId + '">';
@@ -513,6 +537,9 @@
         html += '    <div class="bc-item-text">' + escapeHtml(text) + '</div>';
         if (hint) {
           html += '    <div class="bc-item-hint">' + escapeHtml(hint) + '</div>';
+        }
+        if (why) {
+          html += '    <div class="bc-item-why">' + escapeHtml(why) + '</div>';
         }
         html += '  </div>';
         html += '</div>';
