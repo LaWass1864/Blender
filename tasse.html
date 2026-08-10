@@ -179,7 +179,7 @@
     overflow: hidden;
     transition: max-height 0.25s ease;
   }
-  .bc-section.open .bc-items { max-height: 2200px; }
+  .bc-section.open .bc-items { max-height: 3400px; }
 
   .bc-note {
     display: flex;
@@ -276,7 +276,7 @@
     fr: {
       eyebrow: "Pratique personnelle",
       title: "Ma tasse à café",
-      sub: "Coche chaque étape en suivant le tuto Blender Guru (Partie 1, ~29 min). Le 📍 indique où trouver l'outil à l'écran.",
+      sub: "Coche chaque étape, du corps de la tasse jusqu'à l'anse et au rendu final. Le 📍 indique où trouver l'outil à l'écran.",
       reset: "Réinitialiser ma progression",
       saved: "Progression sauvegardée automatiquement",
       noteIcon: "🔍"
@@ -284,7 +284,7 @@
     en: {
       eyebrow: "Personal practice",
       title: "My coffee mug",
-      sub: "Check off each step while following the Blender Guru tutorial (Part 1, ~29 min). The 📍 shows you where to find the tool on screen.",
+      sub: "Check off each step, from the mug's body through the handle to the final render. The 📍 shows you where to find the tool on screen.",
       reset: "Reset my progress",
       saved: "Progress saved automatically",
       noteIcon: "🔍"
@@ -294,29 +294,85 @@
   const DATA = [
     {
       id: "s1", accent: "var(--gold)",
-      title: { fr: "Tasse à café — Blender Guru", en: "Coffee mug — Blender Guru" },
-      eyebrow: { fr: "Donut 5.0, Partie 1", en: "Donut 5.0, Part 1" },
-      note: { fr: "Basé sur les chapitres officiels de la vidéo (pas une transcription complète). Réutilise 90% de la boîte à outils du tuto maison — seuls Shade Smooth et Delete Face sont vraiment nouveaux.",
-              en: "Based on the video's official chapter markers (not a full transcript). Reuses 90% of the house tutorial's toolkit — only Shade Smooth and Delete Face are genuinely new." },
+      title: { fr: "Le corps de la tasse", en: "The mug's body" },
+      eyebrow: { fr: "Étape 1", en: "Step 1" },
+      note: { fr: "Reprend la même logique que le verre (cylindre creusé + Subdivision), donc les gestes de base sont déjà connus.",
+              en: "Follows the same logic as the glass (hollowed cylinder + Subdivision), so the base gestures are already familiar." },
       items: [
-        { fr: ["Ajouter un cylindre comme base de la tasse (Shift+A > Mesh > Cylinder)", "Ou le menu Add en haut du viewport — c'est le point de départ de la tasse"],
-          en: ["Add a cylinder as the base of the mug (Shift+A > Mesh > Cylinder)", "Or the Add menu at the top of the viewport — the starting point for the mug"] },
-        { fr: ["Appliquer Shade Smooth (clic droit > Shade Smooth)", "Nouveau : lisse l'apparence sans ajouter de géométrie — menu Object en haut, ou clic droit sur l'objet"],
-          en: ["Apply Shade Smooth (right-click > Shade Smooth)", "New: smooths the appearance without adding geometry — Object menu at the top, or right-click the object"] },
-        { fr: ["Passer en Edit Mode, sélectionner la face du dessus (Face mode, 3)", "Icônes de sélection en haut du viewport, à côté de Global"],
-          en: ["Switch to Edit Mode, select the top face (Face mode, 3)", "Selection icons at the top of the viewport, next to Global"] },
-        { fr: ["Supprimer cette face pour créer l'ouverture de la tasse (X > Faces)", "Nouveau : X ouvre un menu, choisir « Faces » (pas juste Delete simple)"],
-          en: ["Delete that face to create the mug's opening (X > Faces)", "New: X opens a menu, choose « Faces » (not just a simple delete)"] },
-        { fr: ["Ajouter le modifier Subdivision Surface (Modifiers > Add Modifier > Generate > Subdivision Surface)", "Déjà vu — même emplacement que pour la maison"],
-          en: ["Add the Subdivision Surface modifier (Modifiers > Add Modifier > Generate > Subdivision Surface)", "Already seen — same location as for the house"] },
-        { fr: ["Ajouter des Loop Cuts pour contrôler l'arrondi (Ctrl/Cmd+R)", "Déjà vu — barre d'outils à gauche ou raccourci clavier"],
-          en: ["Add Loop Cuts to control the roundness (Ctrl/Cmd+R)", "Already seen — left toolbar or keyboard shortcut"] },
-        { fr: ["Utiliser l'outil Inset pour l'épaisseur de la tasse (I)", "Déjà vu — sur la face intérieure ou extérieure selon la paroi à épaissir"],
-          en: ["Use the Inset tool for the mug's thickness (I)", "Already seen — on the inner or outer face depending on which wall to thicken"] },
-        { fr: ["Ajuster l'épaisseur de la paroi de la tasse", "Régler la distance d'Inset, ou déplacer les points intérieurs (G)"],
-          en: ["Adjust the thickness of the mug's wall", "Adjust the Inset distance, or move the inner points (G)"] },
-        { fr: ["Sauvegarder le fichier (Cmd/Ctrl+S)", "Nouveau : choisir un nom et un emplacement au premier enregistrement"],
-          en: ["Save the file (Cmd/Ctrl+S)", "New: choose a name and location on first save"] }
+        { fr: ["Nettoyer la scène si besoin (X sur le cube par défaut, puis « Delete »)", "Clic gauche sur le cube pour le sélectionner (contour orange), puis X, clic sur Delete dans le petit menu"],
+          en: ["Clear the scene if needed (X on the default cube, then « Delete »)", "Left-click the cube to select it (orange outline), then X, click Delete in the small menu"] },
+        { fr: ["Ajouter un cylindre (Shift+A > Mesh > Cylinder)", "Souris dans le viewport, Shift+A ouvre le menu au niveau du curseur — survoler « Mesh » puis cliquer « Cylinder »"],
+          en: ["Add a cylinder (Shift+A > Mesh > Cylinder)", "Mouse in the viewport, Shift+A opens the menu at the cursor — hover « Mesh » then click « Cylinder »"] },
+        { fr: ["Ajuster le nombre de segments dans le panneau « Add Cylinder »", "Panneau déroulant en bas à gauche du viewport, juste après l'ajout — champ Vertices, 24 à 32 donne un bon équilibre rondeur/légèreté"],
+          en: ["Adjust the number of segments in the « Add Cylinder » panel", "Collapsible panel bottom-left of the viewport, right after adding — Vertices field, 24 to 32 gives a good roundness/lightness balance"] },
+        { fr: ["Passer en Edit Mode (Tab)", "Ou le menu déroulant en haut à gauche du viewport, qui passe de « Object Mode » à « Edit Mode »"],
+          en: ["Switch to Edit Mode (Tab)", "Or the dropdown top-left of the viewport, switching from « Object Mode » to « Edit Mode »"] },
+        { fr: ["Activer le mode Face (touche 3) et cliquer sur la face du dessus", "3e des 3 petites icônes en haut du viewport à côté de « Global » — la face sélectionnée devient orange"],
+          en: ["Turn on Face mode (3 key) and click the top face", "3rd of the 3 small icons at the top of the viewport next to « Global » — the selected face turns orange"] },
+        { fr: ["Supprimer cette face pour ouvrir la tasse (X > Faces)", "X ouvre un petit menu à l'endroit du curseur — bien choisir « Faces », pas « Vertices » ni « Edges », sinon ça supprime plus que prévu"],
+          en: ["Delete that face to open up the mug (X > Faces)", "X opens a small menu at the cursor — pick « Faces », not « Vertices » or « Edges », otherwise it deletes more than intended"] },
+        { fr: ["Sélectionner toute la boucle du bord supérieur (Alt+clic sur une arête du bord)", "Mode Edge (touche 2) recommandé — Alt+clic sélectionne toute la boucle d'un coup au lieu d'une seule arête"],
+          en: ["Select the whole top rim loop (Alt+click an edge on the rim)", "Edge mode (2 key) recommended — Alt+click selects the entire loop at once instead of a single edge"] },
+        { fr: ["Inset sur cette boucle pour amorcer la paroi intérieure (I)", "Bouger la souris vers l'intérieur pour réduire le contour, clic gauche pour valider — comme pour le verre"],
+          en: ["Inset on this loop to start the inner wall (I)", "Move the mouse inward to shrink the outline, left-click to confirm — same as for the glass"] },
+        { fr: ["Creuser l'intérieur vers le bas (E puis Z, ou juste E si l'axe se contraint tout seul)", "Extrude cette face réduite vers le bas pour créer le creux — s'arrêter avant de traverser le fond"],
+          en: ["Hollow the inside downward (E then Z, or just E if the axis locks itself)", "Extrude that shrunk face downward to create the hollow — stop before poking through the bottom"] },
+        { fr: ["Ajouter le modifier Subdivision Surface", "Icône clé à molette dans le panneau Propriétés à droite → Add Modifier → Generate → Subdivision Surface"],
+          en: ["Add the Subdivision Surface modifier", "Wrench icon in the Properties panel on the right → Add Modifier → Generate → Subdivision Surface"] },
+        { fr: ["Loop Cut près du bord supérieur, glisser légèrement vers le haut (Ctrl/Cmd+R)", "Même geste que pour le verre — garde le rebord net malgré l'arrondi du Subdivision"],
+          en: ["Loop Cut near the top rim, slide slightly upward (Ctrl/Cmd+R)", "Same gesture as for the glass — keeps the rim crisp despite the Subdivision's rounding"] },
+        { fr: ["Loop Cut près de la base, glisser légèrement vers le bas (Ctrl/Cmd+R)", "Empêche la base de gonfler comme un ballon sous l'effet du Subdivision"],
+          en: ["Loop Cut near the base, slide slightly downward (Ctrl/Cmd+R)", "Stops the base from ballooning out under the Subdivision's effect"] },
+        { fr: ["Revenir en Object Mode et appliquer Shade Smooth", "Tab pour sortir d'Edit Mode, puis clic droit sur l'objet → Shade Smooth dans le menu contextuel"],
+          en: ["Go back to Object Mode and apply Shade Smooth", "Tab to exit Edit Mode, then right-click the object → Shade Smooth in the context menu"] }
+      ]
+    },
+    {
+      id: "s2", accent: "var(--purple)",
+      title: { fr: "L'anse", en: "The handle" },
+      eyebrow: { fr: "Étape 2", en: "Step 2" },
+      note: { fr: "La partie la plus nouvelle : on dessine l'anse en extrudant une boucle plusieurs fois de suite, comme des petits segments de courbe, avant de la ressouder au corps.",
+              en: "The most new part: you draw the handle by extruding a loop several times in a row, like small curve segments, before welding it back onto the body." },
+      items: [
+        { fr: ["Passer en vue de face pour se repérer (touche 1 du pavé numérique)", "Aide à juger la courbe de l'anse bien à plat pendant qu'on la construit"],
+          en: ["Switch to front view to get your bearings (numpad key 1)", "Helps judge the handle's curve flat-on while building it"] },
+        { fr: ["Repasser en Edge mode (2) et sélectionner une petite boucle verticale sur le côté extérieur", "Alt+clic sur une arête verticale du corps — choisis un point à mi-hauteur, côté où l'anse doit partir"],
+          en: ["Switch back to Edge mode (2) and select a small vertical loop on the outer side", "Alt+click a vertical edge on the body — pick a point at mid-height, on the side where the handle should start"] },
+        { fr: ["Extruder cette boucle vers l'extérieur (E, déplacer, clic gauche)", "1er segment de l'anse — vise un angle qui s'éloigne légèrement de la tasse, pas droit à l'horizontale"],
+          en: ["Extrude that loop outward (E, move, left-click)", "1st segment of the handle — aim for an angle that moves slightly away from the mug, not straight horizontal"] },
+        { fr: ["Extruder encore 2 à 3 fois pour dessiner la courbe de l'anse (E répété)", "Chaque E ajoute un segment — pense à une main qui dessinerait un arc à petits traits successifs plutôt qu'une seule courbe"],
+          en: ["Extrude 2-3 more times to draw the handle's curve (repeated E)", "Each E adds a segment — think of a hand drawing an arc in small successive strokes rather than one single curve"] },
+        { fr: ["Ramener le dernier segment vers le corps de la tasse, plus bas", "Le but est que ce dernier point touche (ou soit très proche de) la paroi extérieure, à un niveau inférieur au point de départ"],
+          en: ["Bring the last segment back toward the mug's body, lower down", "The goal is for this last point to touch (or be very close to) the outer wall, at a level lower than the starting point"] },
+        { fr: ["Sélectionner la dernière boucle de l'anse ET la boucle du corps où elle doit se souder", "Maj + Alt+clic pour ajouter une 2e boucle à la sélection sans perdre la première"],
+          en: ["Select the handle's last loop AND the body loop it should weld onto", "Shift + Alt+click to add a 2nd loop to the selection without losing the first"] },
+        { fr: ["Fermer l'anse avec Bridge Edge Loops", "Menu « Edge » en haut du viewport → « Bridge Edge Loops » — relie les 2 boucles sélectionnées par une nouvelle surface"],
+          en: ["Close the handle with Bridge Edge Loops", "« Edge » menu at the top of the viewport → « Bridge Edge Loops » — connects the 2 selected loops with new geometry"] },
+        { fr: ["Vérifier la jonction en tournant la vue (clic molette maintenu)", "L'anse doit sembler soudée au corps, sans trou visible ni double paroi qui se chevauche"],
+          en: ["Check the join by orbiting the view (middle-click drag)", "The handle should look welded to the body, with no visible gap or overlapping double wall"] }
+      ]
+    },
+    {
+      id: "s3", accent: "var(--teal)",
+      title: { fr: "Finitions et rendu", en: "Finishing touches and render" },
+      eyebrow: { fr: "Étape 3", en: "Step 3" },
+      items: [
+        { fr: ["Bevel léger sur les arêtes du bord (Ctrl/Cmd+B)", "En mode Edge, sélectionner la boucle du bord supérieur, Ctrl+B puis bouger légèrement la souris — adoucit l'arête vive avant lissage"],
+          en: ["Light Bevel on the rim edges (Ctrl/Cmd+B)", "In Edge mode, select the top rim loop, Ctrl+B then move the mouse slightly — softens the sharp edge before smoothing"] },
+        { fr: ["Vérifier que l'anse est bien lissée elle aussi", "Si l'anse paraît anguleuse malgré Shade Smooth : ajouter 1-2 Loop Cuts supplémentaires le long de sa courbe"],
+          en: ["Check that the handle is smoothed too", "If the handle looks blocky despite Shade Smooth: add 1-2 extra Loop Cuts along its curve"] },
+        { fr: ["Ajouter un matériau à la tasse", "Panneau Propriétés à droite → icône ronde à damier (Material Properties) → « New » → choisir une couleur type céramique (Base Color)"],
+          en: ["Add a material to the mug", "Properties panel on the right → round checkered icon (Material Properties) → « New » → pick a ceramic-style colour (Base Color)"] },
+        { fr: ["Régler Roughness pour un effet céramique brillant", "Champ Roughness sous Base Color — une valeur basse (0.1-0.2) donne un aspect glacé, plus réaliste pour une tasse"],
+          en: ["Adjust Roughness for a glossy ceramic effect", "Roughness field under Base Color — a low value (0.1-0.2) gives a glazed look, more realistic for a mug"] },
+        { fr: ["Ajouter une lumière et une caméra si besoin", "Shift+A > Light > Point ou Area pour la lumière, Shift+A > Camera pour la caméra"],
+          en: ["Add a light and a camera if needed", "Shift+A > Light > Point or Area for lighting, Shift+A > Camera for the camera"] },
+        { fr: ["Passer en aperçu Matériau pour vérifier le rendu", "4 petites icônes en haut à droite du viewport — cliquer sur la 3e (dégradée)"],
+          en: ["Switch to Material Preview to check the render", "4 small icons top-right of the viewport — click the 3rd one (shaded)"] },
+        { fr: ["Sauvegarder le fichier (Cmd/Ctrl+S)", "Choisir un nom et un emplacement au premier enregistrement"],
+          en: ["Save the file (Cmd/Ctrl+S)", "Choose a name and location on first save"] },
+        { fr: ["Lancer le rendu final (F12)", "Ou en haut de l'écran : « Render » → « Render Image »"],
+          en: ["Launch the final render (F12)", "Or at the top of the screen: « Render » → « Render Image »"] }
       ]
     }
   ];
@@ -386,10 +442,7 @@
       html += '  </div>';
       html += '  <div class="bc-items">';
       if (section.note) {
-        const isWarn = section.noteType === 'warn';
-        const noteClass = isWarn ? ' warn' : '';
-        const prefix = isWarn ? '' : (t.noteIcon + ' ');
-        html += '  <div class="bc-note' + noteClass + '"><span>' + prefix + escapeHtml(section.note[lang]) + '</span></div>';
+        html += '  <div class="bc-note">' + t.noteIcon + ' <span>' + escapeHtml(section.note[lang]) + '</span></div>';
       }
       section.items.forEach((pair, i) => {
         const text = pair[lang][0];

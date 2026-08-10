@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Exercice d'équipe — Scène Blender</title>
+<style>
+  :root{
+    --violet: #7C5CFC;
+    --violet-dark: #5B3FD4;
+    --teal: #14B8A6;
+    --gold: #D4AF37;
+    --bg: #14121F;
+    --card: #1E1B2E;
+    --card-border: #322C4D;
+    --text: #EDEAF6;
+    --text-dim: #A79FC2;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin:0;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: radial-gradient(circle at top left, #211D35, var(--bg) 60%);
+    color: var(--text);
+    padding: 32px 16px;
+  }
+  .wrap { max-width: 700px; margin: 0 auto; }
+  header { margin-bottom: 24px; }
+  h1 {
+    font-size: 1.5rem;
+    margin: 0 0 6px;
+    background: linear-gradient(90deg, var(--violet), var(--teal));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: 800;
+  }
+  .subtitle { color: var(--text-dim); font-size: 0.9rem; }
+
+  .setup-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    margin-top: 20px;
+  }
+  .setup-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 12px 14px;
+  }
+  .setup-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gold); font-weight: 700; margin-bottom: 4px; }
+  .setup-value { font-size: 0.92rem; font-weight: 600; }
+
+  .roles { margin-top: 28px; }
+  .section-title {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+    font-weight: 700;
+    margin-bottom: 10px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .section-title::after { content:""; flex:1; height:1px; background: var(--card-border); }
+
+  .role-card {
+    display:flex;
+    gap: 12px;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    align-items:flex-start;
+  }
+  .role-badge {
+    flex-shrink:0;
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display:flex; align-items:center; justify-content:center;
+    font-size: 1.2rem;
+    background: linear-gradient(135deg, var(--violet), var(--violet-dark));
+  }
+  .role-badge.teal { background: linear-gradient(135deg, var(--teal), #0d7d70); }
+  .role-badge.gold { background: linear-gradient(135deg, var(--gold), #9c7a1e); }
+  .role-name { font-weight: 700; font-size: 0.96rem; }
+  .role-desc { font-size: 0.85rem; color: var(--text-dim); margin-top: 3px; line-height: 1.45; }
+  .role-tip {
+    font-size: 0.8rem;
+    margin-top: 6px;
+    padding: 7px 10px;
+    background: rgba(212,175,55,0.08);
+    border-left: 3px solid var(--gold);
+    border-radius: 4px;
+    color: var(--text);
+  }
+
+  .phase { margin-top: 26px; }
+  .phase-head {
+    display:flex; justify-content:space-between; align-items:baseline;
+    margin-bottom: 4px;
+  }
+  .phase-title { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gold); font-weight: 700; }
+  .phase-timer { font-size: 0.78rem; color: var(--teal); font-weight: 700; }
+  .phase-note { font-size: 0.82rem; color: var(--text-dim); margin-bottom: 10px; }
+
+  .item {
+    display:flex; gap: 12px; align-items:flex-start;
+    background: var(--card); border: 1px solid var(--card-border);
+    border-radius: 12px; padding: 12px 14px; margin-bottom: 8px;
+    cursor: pointer;
+  }
+  .item:hover { border-color: var(--violet); }
+  .item.done { background: #1A2620; border-color: #245C4F; }
+  .item.done .item-title { color: var(--teal); text-decoration: line-through; text-decoration-color: #245C4F; }
+  .checkbox {
+    width: 20px; height: 20px; border-radius: 6px; border: 2px solid var(--violet);
+    flex-shrink: 0; margin-top: 2px; display:flex; align-items:center; justify-content:center;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .item.done .checkbox { background: var(--teal); border-color: var(--teal); }
+  .checkbox svg { width: 13px; height: 13px; opacity:0; }
+  .item.done .checkbox svg { opacity:1; }
+  .item-title { font-weight: 600; font-size: 0.92rem; }
+  .item-detail { font-size: 0.8rem; color: var(--text-dim); margin-top: 3px; line-height: 1.4; }
+
+  .rotate-flag {
+    display:flex; align-items:center; gap:8px;
+    margin: 14px 0;
+    padding: 10px 14px;
+    background: linear-gradient(90deg, rgba(124,92,252,0.12), rgba(20,184,166,0.12));
+    border: 1px dashed var(--violet);
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .reset-btn {
+    margin-top: 24px; background: transparent; border: 1px solid var(--card-border);
+    color: var(--text-dim); padding: 8px 14px; border-radius: 8px; font-size: 0.8rem; cursor: pointer;
+  }
+  .reset-btn:hover { border-color: var(--gold); color: var(--gold); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Exercice d'équipe — Scène "Vitrine"</h1>
+    <div class="subtitle">Maison + texte 3D + personnage, en équipe sur un seul poste</div>
+  </header>
+
+  <div class="setup-grid">
+    <div class="setup-card"><div class="setup-label">Équipes</div><div class="setup-value">3 à 4 par poste</div></div>
+    <div class="setup-card"><div class="setup-label">Durée totale</div><div class="setup-value">~45 min</div></div>
+    <div class="setup-card"><div class="setup-label">Rotation</div><div class="setup-value">Toutes les 10-15 min</div></div>
+    <div class="setup-card"><div class="setup-label">Objectif</div><div class="setup-value">Reconstituer les 3 acquis en scène unique</div></div>
+  </div>
+
+  <div class="roles">
+    <div class="section-title">Les 3 rôles</div>
+
+    <div class="role-card">
+      <div class="role-badge">🗣️</div>
+      <div>
+        <div class="role-name">Le Guide</div>
+        <div class="role-desc">Ne touche ni souris ni clavier. Décrit chaque action avec le vocabulaire précis (« Loop Cut sur l'arête verticale, glisse vers le bas », pas « fais un truc là »). Confie ce rôle en priorité à un·e étudiant·e à l'aise sur la partie en cours — c'est lui/elle qui a le plus à gagner à devoir l'expliquer sans pouvoir montrer.</div>
+        <div class="role-tip">Objectif pédagogique : verbaliser un geste qu'on maîtrise déjà force à vraiment le comprendre, pas juste à le reproduire par réflexe.</div>
+      </div>
+    </div>
+
+    <div class="role-card">
+      <div class="role-badge teal">🖱️</div>
+      <div>
+        <div class="role-name">Le Modéliste</div>
+        <div class="role-desc">Exécute uniquement ce que dit le Guide, rien de plus. A le droit de demander « tu veux dire quoi exactement par… ? » si un terme n'est pas clair — c'est même encouragé.</div>
+        <div class="role-tip">Confie ce rôle à un·e étudiant·e qui a besoin de pratiquer les gestes sans la pression de devoir décider seul·e quoi faire.</div>
+      </div>
+    </div>
+
+    <div class="role-card">
+      <div class="role-badge gold">✅</div>
+      <div>
+        <div class="role-name">Le Contrôleur</div>
+        <div class="role-desc">Suit cette checklist à l'écran, coche les étapes une fois faites, et vérifie avant chaque coche que le résultat visuel correspond bien à la consigne (pas juste que « quelque chose » a changé).</div>
+        <div class="role-tip">Rôle idéal pour un 4e membre, ou pour la personne entre deux rotations.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head"><span class="phase-title">1 · La maison low-poly</span><span class="phase-timer">~15 min</span></div>
+    <div class="phase-note">Reprend l'exercice déjà connu de l'équipe.</div>
+    <div id="phase1"></div>
+  </div>
+
+  <div class="rotate-flag">🔄 Rotation des rôles — tout le monde change de poste (le Guide devient Modéliste, etc.)</div>
+
+  <div class="phase">
+    <div class="phase-head"><span class="phase-title">2 · Le texte 3D</span><span class="phase-timer">~15 min</span></div>
+    <div class="phase-note">Le nom du commerce ou du village, posé devant la maison.</div>
+    <div id="phase2"></div>
+  </div>
+
+  <div class="rotate-flag">🔄 Rotation des rôles — nouvelle permutation</div>
+
+  <div class="phase">
+    <div class="phase-head"><span class="phase-title">3 · Le personnage</span><span class="phase-timer">~15 min</span></div>
+    <div class="phase-note">Une mascotte posée devant la vitrine, avec le Mirror modifier pour la symétrie.</div>
+    <div id="phase3"></div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head"><span class="phase-title">4 · Rendu final et debrief</span><span class="phase-timer">~5 min</span></div>
+    <div class="phase-note">L'équipe explique en 1 minute une décision qu'elle a prise et pourquoi.</div>
+    <div id="phase4"></div>
+  </div>
+
+  <button class="reset-btn" id="resetBtn">↺ Réinitialiser la progression</button>
+</div>
+
+<script>
+const PHASES = {
+  phase1: [
+    { t: "Construire les murs (cube étiré)", d: "Le Guide décrit le redimensionnement (S, X/Y/Z) sans donner de chiffres exacts — le Modéliste ajuste à l'œil." },
+    { t: "Ajouter et poser le toit (cône à 4 côtés)", d: "Le Contrôleur vérifie que le nombre de Vertices a bien été changé à 4 dans le panneau en bas à gauche." },
+    { t: "Ajouter porte et fenêtres", d: "Le Guide doit préciser sur quel mur (« le mur qui nous fait face », pas « celui-là »)." },
+    { t: "Fusionner en un seul objet (Ctrl+J)", d: "Le Contrôleur vérifie dans l'Outliner à droite qu'il ne reste qu'un seul objet « Maison »." },
+    { t: "Appliquer les matériaux (murs + toit)", d: "Couleurs au choix de l'équipe, mais le Guide doit dire précisément quelles faces sélectionner avant d'assigner." },
+  ],
+  phase2: [
+    { t: "Créer le texte et taper le nom choisi", d: "Toute l'équipe se met d'accord sur le nom avant de commencer, pour ne pas perdre de temps une fois au clavier." },
+    { t: "Régler Extrude et Bevel pour le volume", d: "Le Guide doit nommer les 2 réglages (Extrude, Bevel Depth), pas juste dire « rends-le plus épais »." },
+    { t: "Convertir en maillage et positionner devant la maison", d: "Le Contrôleur vérifie l'échelle relative entre texte et maison en tournant la vue (clic molette)." },
+  ],
+  phase3: [
+    { t: "Construire le corps (buste + tête)", d: "Deux formes de base, comme dans l'exercice individuel." },
+    { t: "Ajouter un bras et appliquer le Mirror modifier", d: "Le Guide doit localiser précisément l'icône (clé à molette bleue, panneau Propriétés à droite) sans dire juste « clique là-bas »." },
+    { t: "Fusionner et positionner devant la vitrine", d: "Ctrl+J, puis ajuster échelle et position par rapport à la maison et au texte." },
+  ],
+  phase4: [
+    { t: "Lancer le rendu final (F12)", d: "Vérifier l'éclairage et le cadrage caméra avant de lancer." },
+    { t: "Choisir la décision à présenter", d: "Ex. un choix de couleur, une proportion, une difficulté résolue en équipe." },
+    { t: "Présenter en 1 minute devant un autre groupe", d: "Chaque équipe écoute au moins une autre équipe avant la fin du cours." },
+  ],
+};
+
+let state = {};
+const STORAGE_KEY = 'blender-equipe-vitrine-checklist';
+
+function renderPhase(id, items) {
+  const el = document.getElementById(id);
+  el.innerHTML = '';
+  items.forEach((item, i) => {
+    const itemId = id + '-' + i;
+    const row = document.createElement('div');
+    row.className = 'item' + (state[itemId] ? ' done' : '');
+    row.innerHTML = `
+      <div class="checkbox"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+      <div>
+        <div class="item-title">${item.t}</div>
+        <div class="item-detail">${item.d}</div>
+      </div>`;
+    row.addEventListener('click', () => toggle(itemId));
+    el.appendChild(row);
+  });
+}
+
+function renderAll() {
+  Object.keys(PHASES).forEach(id => renderPhase(id, PHASES[id]));
+}
+
+async function toggle(id) {
+  state[id] = !state[id];
+  renderAll();
+  try { await window.storage.set(STORAGE_KEY, JSON.stringify(state)); } catch(e) { console.warn('Storage indisponible', e); }
+}
+
+document.getElementById('resetBtn').addEventListener('click', async () => {
+  state = {};
+  renderAll();
+  try { await window.storage.set(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+});
+
+(async function init(){
+  try {
+    const res = await window.storage.get(STORAGE_KEY);
+    if (res && res.value) state = JSON.parse(res.value);
+  } catch(e) { /* pas de progression sauvegardée */ }
+  renderAll();
+})();
+</script>
+</body>
+</html>
