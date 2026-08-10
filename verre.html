@@ -256,6 +256,20 @@
   .bc-item-why::before {
     content: "💡 ";
   }
+  .bc-item-warn {
+    font-size: 11.8px;
+    line-height: 1.42;
+    color: var(--ink);
+    margin-top: 6px;
+    padding: 7px 10px;
+    background: rgba(201,162,39,0.1);
+    border-left: 3px solid var(--gold);
+    border-radius: 4px;
+    opacity: 0.92;
+  }
+  .bc-item-warn::before {
+    content: "⚠️ ";
+  }
   .bc-item.done .bc-item-text {
     color: var(--grey);
     text-decoration: line-through;
@@ -263,6 +277,7 @@
   }
   .bc-item.done .bc-item-hint { opacity: 0.4; }
   .bc-item.done .bc-item-why { opacity: 0.4; }
+  .bc-item.done .bc-item-warn { opacity: 0.4; }
 
   .bc-footer {
     padding: 4px 20px 20px;
@@ -356,9 +371,11 @@
         { fr: ["Repasser en Edit Mode, sélectionner le fond intérieur du verre (celui creusé à l'Étape 1) : Inset deux fois (I, I)", "2x Inset resserre les arêtes autour du fond, ce qui empêche le Subdivision Surface de l'arrondir en bosse — comme un pli de papier repassé deux fois"],
           en: ["Switch back to Edit Mode, select the glass's inner bottom (the one hollowed out in Step 1): Inset twice (I, I)", "2x Inset tightens the edges around the bottom, which stops the Subdivision Surface from rounding it into a dome — like a paper crease pressed twice"] },
         { fr: ["Loop Cut sur les arêtes verticales, glisser vers le bas pour aplatir la base (Ctrl/Cmd+R)", "Réduit l'effet trop sphérique du Subdivision en dessous",
-               "Sans rien pour la retenir, la base du verre gonflerait comme un ballon sous l'effet du Subdivision Surface, qui arrondit tout par défaut. En ajoutant une boucle d'arêtes juste à côté du bord inférieur, tu donnes au Subdivision un point d'appui proche : les faces entre cette boucle et le bord n'ont presque plus de place pour s'arrondir, donc la base reste plate."],
+               "Sans rien pour la retenir, la base du verre gonflerait comme un ballon sous l'effet du Subdivision Surface, qui arrondit tout par défaut. En ajoutant une boucle d'arêtes juste à côté du bord inférieur, tu donnes au Subdivision un point d'appui proche : les faces entre cette boucle et le bord n'ont presque plus de place pour s'arrondir, donc la base reste plate.",
+               "Erreur fréquente : survoler une arête sans appuyer sur Ctrl+R ne fait apparaître qu'une fine ligne verticale unique (simple surbrillance) — ce n'est pas un Loop Cut. Et Ctrl+A ou A sélectionnent tout l'objet (tout devient orange), ce n'est pas ça non plus. Le vrai Loop Cut se reconnaît à un anneau jaune horizontal complet qui fait tout le tour du cylindre dès que tu maintiens Ctrl+R avec la souris sur le côté de l'objet, avant même de cliquer."],
           en: ["Loop Cut on the vertical edges, slide down to flatten the base (Ctrl/Cmd+R)", "Reduces the overly spherical effect of the Subdivision underneath",
-               "Without anything to hold it back, the glass's base would balloon out under the Subdivision Surface, which rounds everything by default. Adding a loop of edges close to the bottom border gives the Subdivision a nearby anchor point: the faces between that loop and the border barely have room to round off, so the base stays flat."] },
+               "Without anything to hold it back, the glass's base would balloon out under the Subdivision Surface, which rounds everything by default. Adding a loop of edges close to the bottom border gives the Subdivision a nearby anchor point: the faces between that loop and the border barely have room to round off, so the base stays flat.",
+               "Common mistake: hovering an edge without pressing Ctrl+R only shows a single thin vertical line (plain highlight) — that's not a Loop Cut. And Ctrl+A or A select the whole object (everything turns orange), that's not it either. A real Loop Cut shows as a complete horizontal yellow ring going all the way around the cylinder as soon as you hold Ctrl+R with the mouse over the side of the object, even before clicking."] },
         { fr: ["Loop Cut près du haut, glisser vers le haut (Ctrl/Cmd+R)", "Même geste, côté opposé",
                "Même logique, côté opposé. Sans cette boucle, le bord supérieur du verre (le rebord où on boit) serait lui aussi aspiré vers l'intérieur par l'arrondi du Subdivision, et le verre perdrait son ouverture nette. Cette coupe garde le rebord droit et net."],
           en: ["Loop Cut near the top, slide up (Ctrl/Cmd+R)", "Same gesture, opposite side",
@@ -529,6 +546,7 @@
         const text = pair[lang][0];
         const hint = pair[lang][1];
         const why = pair[lang][2];
+        const warn = pair[lang][3];
         const itemId = section.id + '-' + i;
         const checked = !!state[itemId];
         html += '<div class="bc-item' + (checked ? ' done' : '') + '" data-item="' + itemId + '">';
@@ -540,6 +558,9 @@
         }
         if (why) {
           html += '    <div class="bc-item-why">' + escapeHtml(why) + '</div>';
+        }
+        if (warn) {
+          html += '    <div class="bc-item-warn">' + escapeHtml(warn) + '</div>';
         }
         html += '  </div>';
         html += '</div>';
