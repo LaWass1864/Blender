@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Checklist — Texte 3D dans Blender</title>
+<style>
+  :root{
+    --violet: #7C5CFC;
+    --violet-dark: #5B3FD4;
+    --teal: #14B8A6;
+    --gold: #D4AF37;
+    --bg: #14121F;
+    --card: #1E1B2E;
+    --card-border: #322C4D;
+    --text: #EDEAF6;
+    --text-dim: #A79FC2;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin:0;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: radial-gradient(circle at top left, #211D35, var(--bg) 60%);
+    color: var(--text);
+    padding: 32px 16px;
+  }
+  .wrap { max-width: 620px; margin: 0 auto; }
+  header { margin-bottom: 24px; }
+  h1 {
+    font-size: 1.5rem;
+    margin: 0 0 6px;
+    background: linear-gradient(90deg, var(--violet), var(--teal));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: 800;
+  }
+  .subtitle { color: var(--text-dim); font-size: 0.9rem; }
+
+  .progress-shell {
+    margin-top: 18px;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    padding: 14px 16px;
+  }
+  .progress-track {
+    height: 10px;
+    background: #2A2540;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--teal), var(--violet), var(--gold));
+    transition: width 0.35s ease;
+  }
+  .progress-label { display:flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-dim); }
+  .progress-label b { color: var(--text); }
+
+  .phase {
+    margin-top: 26px;
+  }
+  .phase-title {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+    font-weight: 700;
+    margin-bottom: 10px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .phase-title::after {
+    content:"";
+    flex:1;
+    height:1px;
+    background: var(--card-border);
+  }
+
+  .item {
+    display:flex;
+    gap: 12px;
+    align-items:flex-start;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .item:hover { border-color: var(--violet); }
+  .item.done { background: #1A2620; border-color: #245C4F; }
+  .item.done .item-title { color: var(--teal); text-decoration: line-through; text-decoration-color: #245C4F; }
+  .item.done .item-detail { opacity: 0.7; }
+
+  .checkbox {
+    width: 20px; height: 20px;
+    border-radius: 6px;
+    border: 2px solid var(--violet);
+    flex-shrink: 0;
+    margin-top: 2px;
+    display:flex; align-items:center; justify-content:center;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .item.done .checkbox {
+    background: var(--teal);
+    border-color: var(--teal);
+  }
+  .checkbox svg { width: 13px; height: 13px; opacity:0; transition: opacity 0.15s; }
+  .item.done .checkbox svg { opacity:1; }
+
+  .item-title { font-weight: 600; font-size: 0.94rem; }
+  .item-detail { font-size: 0.82rem; color: var(--text-dim); margin-top: 3px; line-height: 1.4; }
+  .key {
+    display:inline-block;
+    font-family: 'Consolas', monospace;
+    background: #2A2540;
+    border: 1px solid var(--card-border);
+    border-radius: 5px;
+    padding: 1px 6px;
+    font-size: 0.78rem;
+    color: var(--gold);
+    margin: 0 2px;
+  }
+
+  .reset-btn {
+    margin-top: 24px;
+    background: transparent;
+    border: 1px solid var(--card-border);
+    color: var(--text-dim);
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    cursor: pointer;
+  }
+  .reset-btn:hover { border-color: var(--gold); color: var(--gold); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Texte 3D dans Blender</h1>
+    <div class="subtitle">Checklist de suivi — du texte plat au rendu final</div>
+  </header>
+
+  <div class="progress-shell">
+    <div class="progress-label"><span>Progression</span><span><b id="progressCount">0</b>/<span id="progressTotal">0</span> étapes</span></div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+
+  <div id="checklist"></div>
+
+  <button class="reset-btn" id="resetBtn">↺ Réinitialiser la progression</button>
+</div>
+
+<script>
+const DATA = [
+  { phase: "1 · Préparer la scène", items: [
+    { t: "Supprimer le cube par défaut", d: "Clique une fois avec le bouton gauche de la souris sur le cube gris au centre de la grande fenêtre grise (la « fenêtre 3D »). Un fin contour orange apparaît autour de lui : c'est qu'il est sélectionné. Appuie sur <span class='key'>X</span> (ou <span class='key'>Suppr</span>) : un petit menu s'affiche juste sous le curseur, clique sur « Supprimer »." },
+    { t: "Ajouter l'objet Texte", d: "Place le curseur de la souris dans la fenêtre 3D (obligatoire, sinon le raccourci ne marche pas), puis appuie sur <span class='key'>Maj+A</span>. Un menu vertical s'ouvre à l'endroit du curseur : descends avec la souris jusqu'à la ligne « Texte » (Text, avant-dernière ligne en général) et clique. Une lettre F majuscule blanche et plate apparaît, posée à plat sur la grille, à l'endroit du petit repère rouge et blanc (le curseur 3D)." },
+  ]},
+  { phase: "2 · Éditer le contenu", items: [
+    { t: "Entrer en Mode Édition", d: "Le F doit être sélectionné (contour orange). Regarde en haut à gauche de la fenêtre 3D : un menu déroulant affiche « Mode Objet ». Appuie sur la touche <span class='key'>Tab</span> du clavier : ce menu passe à « Mode Édition » et une petite barre verticale clignotante (le curseur de texte) apparaît juste après le F." },
+    { t: "Effacer le texte par défaut", d: "Le curseur de texte clignotant étant actif, appuie une seule fois sur <span class='key'>Retour arrière</span> pour effacer la lettre F. (S'il y avait plusieurs lettres, fais <span class='key'>Ctrl+A</span> puis <span class='key'>Retour arrière</span> pour tout effacer d'un coup.)" },
+    { t: "Taper le texte voulu", d: "Écris directement au clavier, exactement comme dans un champ de saisie classique : les lettres apparaissent une à une sur la grille au fur et à mesure." },
+    { t: "Revenir en Mode Objet", d: "Appuie de nouveau sur <span class='key'>Tab</span>. Le menu en haut à gauche de la fenêtre 3D repasse sur « Mode Objet » : c'est le signal que le texte est validé et prêt à être modifié dans son ensemble." },
+  ]},
+  { phase: "3 · Typographie", items: [
+    { t: "Ouvrir l'onglet Objet Data (police)", d: "Regarde tout à droite de l'écran : une fine colonne verticale d'icônes empilées (le panneau Propriétés). Cherche l'icône qui ressemble à un petit « a » vert (Object Data Properties) — c'est en général l'une des dernières icônes de la colonne, juste au-dessus de l'icône ronde à damier (Matériau). Clique dessus : le panneau à gauche de cette colonne affiche alors les réglages du texte (sections Police, Géométrie, Paragraphe...)." },
+    { t: "Choisir la police", d: "Dans ce panneau, tout en haut, section « Police » (Font). Clique sur la petite icône de dossier à côté du nom de police pour parcourir tes fichiers, ou laisse la police par défaut (Bfont) pour un premier essai." },
+    { t: "Ajuster taille et espacement", d: "Toujours dans ce même panneau, déplie la section « Transform » : le champ « Size » règle la hauteur des lettres (essaie 1 à 2). Plus bas, section « Paragraph », le champ « Character Spacing » règle l'écart entre les lettres." },
+  ]},
+  { phase: "4 · Donner du volume (le rendre 3D)", items: [
+    { t: "Ouvrir la section Geometry", d: "Toujours dans le panneau Objet Data (icône « a » verte), fais défiler vers le bas avec la molette de la souris jusqu'à la section « Geometry ». Si elle est repliée, clique sur la petite flèche ▸ à gauche de son nom pour la déplier." },
+    { t: "Régler l'Extrusion (Extrude)", d: "Premier champ de la section Geometry. Clique dedans et tape une valeur, ou clique-glisse dessus vers la droite. Commence à 0.02, monte jusqu'à 0.05–0.08 : le texte, jusque-là plat, gagne visiblement de l'épaisseur en direction de la caméra/du dessus." },
+    { t: "Ajouter un chanfrein (Bevel)", d: "Juste en dessous, sous-section « Bevel » (clique sur sa flèche ▸ pour l'ouvrir si besoin). Deux champs : « Depth » (profondeur du biseau sur les arêtes, essaie 0.005 à 0.01) et « Resolution » (nombre de segments pour l'arrondi, 2 à 4 suffit). Cela adoucit les arêtes vives et évite l'effet « carton plat »." },
+    { t: "Vérifier le volume en tournant la vue", d: "Clique-maintiens le bouton du milieu de la souris (la molette) dans la fenêtre 3D et bouge la souris pour orbiter autour de l'objet. Vérifie que le texte a bien une épaisseur visible sous tous les angles, pas seulement de face." },
+  ]},
+  { phase: "5 · Finaliser le maillage", items: [
+    { t: "Convertir le texte en maillage", d: "En haut de la fenêtre 3D, dans la barre de menus horizontale (Fichier, Édition, Rendu...), clique sur « Objet ». Dans le menu déroulant, descends sur « Convertir en » puis clique sur « Maillage » dans le sous-menu qui s'ouvre sur le côté." },
+    { t: "Appliquer l'échelle", d: "L'objet doit rester sélectionné (contour orange). Appuie sur <span class='key'>Ctrl+A</span> : un petit menu apparaît sous le curseur, clique sur « Échelle ». Ça évite des déformations bizarres si tu ajoutes des modificateurs plus tard." },
+  ]},
+  { phase: "6 · Matériau et rendu", items: [
+    { t: "Ouvrir l'onglet Matériau", d: "Dans la même colonne verticale d'icônes à droite (panneau Propriétés), clique sur l'icône ronde à damier rouge/blanc/gris (Material Properties), juste en dessous de l'icône « a » verte utilisée plus haut." },
+    { t: "Créer un nouveau matériau", d: "Le panneau affiche « Nouveau matériau » (bouton avec un +) : clique dessus. Une liste de réglages apparaît, avec en premier le carré de couleur « Base Color »." },
+    { t: "Régler la couleur (Base Color)", d: "Clique sur le rectangle coloré à côté de « Base Color » : une roue de couleurs s'ouvre, choisis la teinte voulue (ou entre un code hexadécimal dans le petit champ en bas de la roue)." },
+    { t: "Régler Roughness / Metallic", d: "Juste en dessous de Base Color, deux curseurs : « Metallic » (0 = mat/plastique, 1 = métal) et « Roughness » (0 = brillant/miroir, 1 = mat). Ajuste-les pour l'effet voulu (ex. or brossé : Metallic proche de 1, Roughness autour de 0.3)." },
+    { t: "Passer en aperçu Matériau", d: "En haut à droite de la fenêtre 3D, une rangée de 4 petites sphères. Clique sur la 3ᵉ (celle qui a l'air éclairée en dégradé, « Aperçu Matériau ») pour voir les couleurs/matériaux en temps réel dans le viewport, plutôt que la vue grise par défaut." },
+    { t: "Positionner le texte dans la scène", d: "Objet sélectionné : <span class='key'>G</span> puis bouge la souris pour déplacer (clic gauche pour valider), <span class='key'>R</span> pour tourner, <span class='key'>S</span> pour redimensionner. Tu peux aussi taper un axe après (ex. <span class='key'>G</span> puis <span class='key'>Z</span>) pour contraindre le mouvement à un seul axe." },
+    { t: "Lancer le rendu final", d: "Appuie sur <span class='key'>F12</span>, ou en haut de l'écran clique sur « Rendu » puis « Rendu de l'image » dans le menu déroulant. Une nouvelle fenêtre s'ouvre avec l'image calculée." },
+  ]},
+];
+
+const listEl = document.getElementById('checklist');
+const total = DATA.reduce((n,p)=>n+p.items.length,0);
+document.getElementById('progressTotal').textContent = total;
+
+let state = {};
+const STORAGE_KEY = 'blender-texte-3d-checklist';
+
+function render(){
+  listEl.innerHTML = '';
+  DATA.forEach((phase, pi) => {
+    const phaseDiv = document.createElement('div');
+    phaseDiv.className = 'phase';
+    const title = document.createElement('div');
+    title.className = 'phase-title';
+    title.textContent = phase.phase;
+    phaseDiv.appendChild(title);
+
+    phase.items.forEach((item, ii) => {
+      const id = pi + '-' + ii;
+      const row = document.createElement('div');
+      row.className = 'item' + (state[id] ? ' done' : '');
+      row.innerHTML = `
+        <div class="checkbox"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <div>
+          <div class="item-title">${item.t}</div>
+          <div class="item-detail">${item.d}</div>
+        </div>`;
+      row.addEventListener('click', () => toggle(id));
+      phaseDiv.appendChild(row);
+    });
+    listEl.appendChild(phaseDiv);
+  });
+  updateProgress();
+}
+
+function updateProgress(){
+  const done = Object.values(state).filter(Boolean).length;
+  document.getElementById('progressCount').textContent = done;
+  document.getElementById('progressFill').style.width = (total ? (done/total*100) : 0) + '%';
+}
+
+async function toggle(id){
+  state[id] = !state[id];
+  render();
+  try { await window.storage.set(STORAGE_KEY, JSON.stringify(state)); } catch(e) { console.warn('Storage indisponible', e); }
+}
+
+document.getElementById('resetBtn').addEventListener('click', async () => {
+  state = {};
+  render();
+  try { await window.storage.set(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+});
+
+(async function init(){
+  try {
+    const res = await window.storage.get(STORAGE_KEY);
+    if (res && res.value) state = JSON.parse(res.value);
+  } catch(e) { /* pas de progression sauvegardée */ }
+  render();
+})();
+</script>
+</body>
+</html>
