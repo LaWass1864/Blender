@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Checklist — Texte 3D + Personnage (Blender)</title>
+<style>
+  :root{
+    --violet: #7C5CFC;
+    --violet-dark: #5B3FD4;
+    --teal: #14B8A6;
+    --gold: #D4AF37;
+    --bg: #14121F;
+    --card: #1E1B2E;
+    --card-border: #322C4D;
+    --text: #EDEAF6;
+    --text-dim: #A79FC2;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin:0;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: radial-gradient(circle at top left, #211D35, var(--bg) 60%);
+    color: var(--text);
+    padding: 32px 16px;
+  }
+  .wrap { max-width: 640px; margin: 0 auto; }
+  header { margin-bottom: 24px; }
+  h1 {
+    font-size: 1.5rem;
+    margin: 0 0 6px;
+    background: linear-gradient(90deg, var(--violet), var(--teal));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: 800;
+  }
+  .subtitle { color: var(--text-dim); font-size: 0.9rem; }
+
+  .progress-shell {
+    margin-top: 18px;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    padding: 14px 16px;
+  }
+  .progress-track {
+    height: 10px;
+    background: #2A2540;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--teal), var(--violet), var(--gold));
+    transition: width 0.35s ease;
+  }
+  .progress-label { display:flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-dim); }
+  .progress-label b { color: var(--text); }
+
+  .phase { margin-top: 26px; }
+  .phase-title {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+    font-weight: 700;
+    margin-bottom: 4px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .phase-title::after { content:""; flex:1; height:1px; background: var(--card-border); }
+  .phase-note { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 10px; }
+
+  .item {
+    display:flex;
+    gap: 12px;
+    align-items:flex-start;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .item:hover { border-color: var(--violet); }
+  .item.done { background: #1A2620; border-color: #245C4F; }
+  .item.done .item-title { color: var(--teal); text-decoration: line-through; text-decoration-color: #245C4F; }
+  .item.done .item-detail { opacity: 0.7; }
+
+  .checkbox {
+    width: 20px; height: 20px;
+    border-radius: 6px;
+    border: 2px solid var(--violet);
+    flex-shrink: 0;
+    margin-top: 2px;
+    display:flex; align-items:center; justify-content:center;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .item.done .checkbox { background: var(--teal); border-color: var(--teal); }
+  .checkbox svg { width: 13px; height: 13px; opacity:0; transition: opacity 0.15s; }
+  .item.done .checkbox svg { opacity:1; }
+
+  .item-title { font-weight: 600; font-size: 0.94rem; }
+  .item-detail { font-size: 0.82rem; color: var(--text-dim); margin-top: 3px; line-height: 1.45; }
+  .key {
+    display:inline-block;
+    font-family: 'Consolas', monospace;
+    background: #2A2540;
+    border: 1px solid var(--card-border);
+    border-radius: 5px;
+    padding: 1px 6px;
+    font-size: 0.78rem;
+    color: var(--gold);
+    margin: 0 2px;
+  }
+
+  .reset-btn {
+    margin-top: 24px;
+    background: transparent;
+    border: 1px solid var(--card-border);
+    color: var(--text-dim);
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    cursor: pointer;
+  }
+  .reset-btn:hover { border-color: var(--gold); color: var(--gold); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Texte 3D + Personnage</h1>
+    <div class="subtitle">Checklist de suivi — composer une scène avec du texte 3D ET un petit personnage low-poly</div>
+  </header>
+
+  <div class="progress-shell">
+    <div class="progress-label"><span>Progression</span><span><b id="progressCount">0</b>/<span id="progressTotal">0</span> étapes</span></div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+
+  <div id="checklist"></div>
+
+  <button class="reset-btn" id="resetBtn">↺ Réinitialiser la progression</button>
+</div>
+
+<script>
+const DATA = [
+  { phase: "1 · Préparer la scène", note: "Comme pour l'exercice du texte seul : on part d'une scène vide.", items: [
+    { t: "Supprimer le cube par défaut", d: "Clique une fois avec le bouton gauche de la souris sur le cube gris au centre de la fenêtre 3D (contour orange = sélectionné), puis <span class='key'>X</span> → « Supprimer » dans le petit menu qui s'affiche." },
+  ]},
+
+  { phase: "2 · Créer le texte 3D", note: "Reprend la méthode de l'exercice précédent, en plus rapide.", items: [
+    { t: "Ajouter le texte", d: "Souris dans la fenêtre 3D → <span class='key'>Maj+A</span> → clique sur « Texte » dans le menu vertical. Une lettre F plate apparaît sur la grille." },
+    { t: "Modifier le contenu", d: "<span class='key'>Tab</span> pour entrer en Mode Édition → <span class='key'>Ctrl+A</span> puis <span class='key'>Retour arrière</span> pour effacer le F → taper le texte voulu → <span class='key'>Tab</span> pour revenir en Mode Objet." },
+    { t: "Donner du volume", d: "Panneau Propriétés à droite → icône « a » verte (Objet Data) → section « Geometry » → champ « Extrude » (essaie 0.04) → sous-section « Bevel » → « Depth » (0.005–0.01) pour arrondir les arêtes." },
+  ]},
+
+  { phase: "3 · Modéliser un personnage low-poly", note: "On construit un petit bonhomme simple avec des formes de base, comme pour la maison low-poly. Pas besoin de télécharger un modèle.", items: [
+    { t: "Ajouter le corps", d: "<span class='key'>Maj+A</span> → Maillage → Cylindre. Il apparaît au niveau du curseur 3D. Utilise <span class='key'>S</span> puis tape une valeur (ex. 0.4) pour le rendre plus fin, et <span class='key'>S</span>, <span class='key'>Z</span> pour l'étirer en hauteur (buste)." },
+    { t: "Ajouter la tête", d: "<span class='key'>Maj+A</span> → Maillage → UV Sphere. Utilise <span class='key'>G</span> puis <span class='key'>Z</span> pour la remonter au-dessus du corps, et <span class='key'>S</span> pour l'ajuster à une taille cohérente avec le buste." },
+    { t: "Ajouter un bras", d: "<span class='key'>Maj+A</span> → Maillage → Cylindre, redimensionné fin et long (<span class='key'>S</span> pour épaisseur, <span class='key'>S</span>+<span class='key'>Z</span> pour longueur). Positionne-le sur le côté du buste avec <span class='key'>G</span>, puis incline-le légèrement avec <span class='key'>R</span> si besoin." },
+    { t: "Dupliquer ce bras en jambe", d: "Bras sélectionné → <span class='key'>Maj+D</span> pour le dupliquer, puis <span class='key'>G</span>+<span class='key'>Z</span> pour le descendre sous le buste et <span class='key'>R</span> pour le redresser à la verticale : ça devient une jambe." },
+    { t: "Appliquer un modificateur Mirror pour le côté opposé", d: "Sélectionne le bras (ou la jambe) → panneau Propriétés à droite → icône clé à molette bleue (Modifier Properties, juste au-dessus de l'icône « a » verte) → bouton « Add Modifier » → catégorie « Generate » → « Mirror ». Vérifie que l'axe X est coché dans les réglages du modificateur : une copie miroir apparaît automatiquement de l'autre côté du corps." },
+    { t: "Vérifier l'objet miroir du centre du corps", d: "Le Mirror modifier réfléchit par rapport à l'origine de l'objet sélectionné (pas forcément le centre du buste). Si la copie n'est pas bien alignée, ouvre les réglages du modificateur (icône clé à molette) → section « Mirror Object » → clique dans le champ et sélectionne le buste (le cylindre du corps) dans la liste." },
+  ]},
+
+  { phase: "4 · Composer la scène", note: "Placer le texte et le personnage ensemble, dans un cadrage cohérent.", items: [
+    { t: "Sélectionner toutes les pièces du personnage", d: "Clique sur la tête, puis <span class='key'>Maj</span> + clic gauche sur chaque autre pièce (buste, bras, jambe) pour les ajouter à la sélection (elles s'entourent d'un contour orange, la dernière cliquée en orange plus clair)." },
+    { t: "Regrouper le personnage en un seul objet", d: "Toutes les pièces sélectionnées → <span class='key'>Ctrl+J</span> pour les fusionner en un seul objet (jonction). Elles bougeront désormais ensemble." },
+    { t: "Positionner le personnage à côté du texte", d: "Objet fusionné sélectionné → <span class='key'>G</span> puis déplace la souris (ou <span class='key'>G</span>, <span class='key'>X</span> pour contraindre à l'axe X) pour placer le personnage à côté du texte, comme s'il le présentait." },
+    { t: "Ajuster les échelles relatives", d: "Compare les tailles à l'œil en tournant la vue (clic molette maintenu + déplacement de souris). Utilise <span class='key'>S</span> sur le personnage ou le texte pour que les proportions paraissent naturelles entre les deux." },
+  ]},
+
+  { phase: "5 · Matériaux et couleurs", note: "Différencier visuellement le personnage et le texte.", items: [
+    { t: "Créer un matériau pour le personnage", d: "Personnage sélectionné → panneau Propriétés à droite → icône ronde à damier rouge/blanc/gris (Material Properties, sous l'icône clé à molette) → « Nouveau matériau » → clique le rectangle « Base Color » pour choisir une couleur (ex. bleu pour les vêtements)." },
+    { t: "Créer un matériau pour le texte", d: "Sélectionne le texte → même icône damier → « Nouveau matériau » → choisis une couleur contrastée (ex. or/jaune) pour qu'il ressorte à côté du personnage." },
+  ]},
+
+  { phase: "6 · Éclairage, caméra et rendu", note: "Pour obtenir une belle image finale des deux éléments ensemble.", items: [
+    { t: "Ajouter une lumière", d: "<span class='key'>Maj+A</span> → Lumière → « Point » ou « Zone » (Area). Positionne-la au-dessus et légèrement de côté avec <span class='key'>G</span>, pour créer des ombres qui donnent du relief au personnage et au texte." },
+    { t: "Positionner la caméra", d: "S'il n'y a pas déjà de caméra dans la scène : <span class='key'>Maj+A</span> → Caméra. Sélectionne-la, déplace-la avec <span class='key'>G</span> et oriente-la avec <span class='key'>R</span> pour cadrer le texte et le personnage ensemble. Astuce : <span class='key'>Ctrl+Alt+0</span> place la caméra à la vue actuelle du viewport." },
+    { t: "Passer en aperçu Matériau", d: "En haut à droite de la fenêtre 3D, rangée de 4 petites sphères : clique sur la 3ᵉ (dégradée) pour voir les couleurs en temps réel dans le viewport." },
+    { t: "Lancer le rendu final", d: "Touche <span class='key'>F12</span>, ou en haut de l'écran : « Rendu » → « Rendu de l'image ». Une fenêtre s'ouvre avec l'image calculée du texte et du personnage réunis." },
+  ]},
+];
+
+const listEl = document.getElementById('checklist');
+const total = DATA.reduce((n,p)=>n+p.items.length,0);
+document.getElementById('progressTotal').textContent = total;
+
+let state = {};
+const STORAGE_KEY = 'blender-texte-3d-personnage-checklist';
+
+function render(){
+  listEl.innerHTML = '';
+  DATA.forEach((phase, pi) => {
+    const phaseDiv = document.createElement('div');
+    phaseDiv.className = 'phase';
+    const title = document.createElement('div');
+    title.className = 'phase-title';
+    title.textContent = phase.phase;
+    phaseDiv.appendChild(title);
+    if (phase.note) {
+      const note = document.createElement('div');
+      note.className = 'phase-note';
+      note.textContent = phase.note;
+      phaseDiv.appendChild(note);
+    }
+
+    phase.items.forEach((item, ii) => {
+      const id = pi + '-' + ii;
+      const row = document.createElement('div');
+      row.className = 'item' + (state[id] ? ' done' : '');
+      row.innerHTML = `
+        <div class="checkbox"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <div>
+          <div class="item-title">${item.t}</div>
+          <div class="item-detail">${item.d}</div>
+        </div>`;
+      row.addEventListener('click', () => toggle(id));
+      phaseDiv.appendChild(row);
+    });
+    listEl.appendChild(phaseDiv);
+  });
+  updateProgress();
+}
+
+function updateProgress(){
+  const done = Object.values(state).filter(Boolean).length;
+  document.getElementById('progressCount').textContent = done;
+  document.getElementById('progressFill').style.width = (total ? (done/total*100) : 0) + '%';
+}
+
+async function toggle(id){
+  state[id] = !state[id];
+  render();
+  try { await window.storage.set(STORAGE_KEY, JSON.stringify(state)); } catch(e) { console.warn('Storage indisponible', e); }
+}
+
+document.getElementById('resetBtn').addEventListener('click', async () => {
+  state = {};
+  render();
+  try { await window.storage.set(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+});
+
+(async function init(){
+  try {
+    const res = await window.storage.get(STORAGE_KEY);
+    if (res && res.value) state = JSON.parse(res.value);
+  } catch(e) { /* pas de progression sauvegardée */ }
+  render();
+})();
+</script>
+</body>
+</html>
