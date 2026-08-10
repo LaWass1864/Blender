@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Checklist — Petite maison low-poly (Blender)</title>
+<style>
+  :root{
+    --violet: #7C5CFC;
+    --violet-dark: #5B3FD4;
+    --teal: #14B8A6;
+    --gold: #D4AF37;
+    --bg: #14121F;
+    --card: #1E1B2E;
+    --card-border: #322C4D;
+    --text: #EDEAF6;
+    --text-dim: #A79FC2;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin:0;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: radial-gradient(circle at top left, #211D35, var(--bg) 60%);
+    color: var(--text);
+    padding: 32px 16px;
+  }
+  .wrap { max-width: 640px; margin: 0 auto; }
+  header { margin-bottom: 24px; }
+  h1 {
+    font-size: 1.5rem;
+    margin: 0 0 6px;
+    background: linear-gradient(90deg, var(--violet), var(--teal));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: 800;
+  }
+  .subtitle { color: var(--text-dim); font-size: 0.9rem; }
+
+  .progress-shell {
+    margin-top: 18px;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    padding: 14px 16px;
+  }
+  .progress-track {
+    height: 10px;
+    background: #2A2540;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--teal), var(--violet), var(--gold));
+    transition: width 0.35s ease;
+  }
+  .progress-label { display:flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-dim); }
+  .progress-label b { color: var(--text); }
+
+  .phase { margin-top: 26px; }
+  .phase-title {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+    font-weight: 700;
+    margin-bottom: 4px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .phase-title::after { content:""; flex:1; height:1px; background: var(--card-border); }
+  .phase-note { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 10px; }
+
+  .item {
+    display:flex;
+    gap: 12px;
+    align-items:flex-start;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .item:hover { border-color: var(--violet); }
+  .item.done { background: #1A2620; border-color: #245C4F; }
+  .item.done .item-title { color: var(--teal); text-decoration: line-through; text-decoration-color: #245C4F; }
+  .item.done .item-detail { opacity: 0.7; }
+
+  .checkbox {
+    width: 20px; height: 20px;
+    border-radius: 6px;
+    border: 2px solid var(--violet);
+    flex-shrink: 0;
+    margin-top: 2px;
+    display:flex; align-items:center; justify-content:center;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .item.done .checkbox { background: var(--teal); border-color: var(--teal); }
+  .checkbox svg { width: 13px; height: 13px; opacity:0; transition: opacity 0.15s; }
+  .item.done .checkbox svg { opacity:1; }
+
+  .item-title { font-weight: 600; font-size: 0.94rem; }
+  .item-detail { font-size: 0.82rem; color: var(--text-dim); margin-top: 3px; line-height: 1.45; }
+  .key {
+    display:inline-block;
+    font-family: 'Consolas', monospace;
+    background: #2A2540;
+    border: 1px solid var(--card-border);
+    border-radius: 5px;
+    padding: 1px 6px;
+    font-size: 0.78rem;
+    color: var(--gold);
+    margin: 0 2px;
+  }
+
+  .reset-btn {
+    margin-top: 24px;
+    background: transparent;
+    border: 1px solid var(--card-border);
+    color: var(--text-dim);
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    cursor: pointer;
+  }
+  .reset-btn:hover { border-color: var(--gold); color: var(--gold); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Petite maison low-poly</h1>
+    <div class="subtitle">Checklist de suivi — du cube de base à la maison texturée</div>
+  </header>
+
+  <div class="progress-shell">
+    <div class="progress-label"><span>Progression</span><span><b id="progressCount">0</b>/<span id="progressTotal">0</span> étapes</span></div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+
+  <div id="checklist"></div>
+
+  <button class="reset-btn" id="resetBtn">↺ Réinitialiser la progression</button>
+</div>
+
+<script>
+const DATA = [
+  { phase: "1 · Préparer la scène", note: "On garde le cube par défaut cette fois : il va devenir les murs.", items: [
+    { t: "Vérifier la vue et le cube de départ", d: "Fenêtre 3D bien visible au centre de l'écran, cube gris au milieu de la grille. Si tu veux repartir de zéro : clique sur le cube (contour orange) puis <span class='key'>X</span> → « Supprimer », et <span class='key'>Maj+A</span> → Maillage → Cube pour en remettre un neuf au curseur 3D." },
+    { t: "Passer en vue de face pour se repérer", d: "Pavé numérique, touche <span class='key'>1</span> : ça donne une vue bien droite, pratique pour juger des proportions de la maison au fur et à mesure." },
+  ]},
+
+  { phase: "2 · Les murs", note: "Le cube de base, étiré aux bonnes proportions.", items: [
+    { t: "Sélectionner le cube", d: "Clic gauche dessus : un contour orange apparaît autour de lui." },
+    { t: "Étirer en hauteur", d: "Appuie sur <span class='key'>S</span> puis <span class='key'>Z</span>, bouge la souris pour étirer verticalement, tape une valeur si besoin (ex. 1.4) puis valide avec un clic gauche ou <span class='key'>Entrée</span>." },
+    { t: "Ajuster largeur et profondeur", d: "<span class='key'>S</span> puis <span class='key'>X</span> pour la largeur, <span class='key'>S</span> puis <span class='key'>Y</span> pour la profondeur. Vise une base rectangulaire simple, pas un cube parfait, pour que ça ressemble à une maison." },
+    { t: "Remonter la base au niveau du sol", d: "<span class='key'>G</span> puis <span class='key'>Z</span> pour que le dessous du cube touche le plan horizontal (la grille), sinon la maison paraîtra enfoncée ou flottante." },
+  ]},
+
+  { phase: "3 · Le toit", note: "Une pyramide posée sur les murs.", items: [
+    { t: "Ajouter un cône", d: "Souris dans la fenêtre 3D → <span class='key'>Maj+A</span> → Maillage → Cône. Il apparaît au curseur 3D, encore avec une base ronde à ce stade." },
+    { t: "Réduire le nombre de côtés à 4", d: "Juste après l'ajout, un petit panneau apparaît en bas à gauche de la fenêtre 3D (« Ajouter un cône »). Clique dessus pour le déplier, et change « Vertices » de 32 à 4 : le cône devient une pyramide à 4 faces, comme un toit." },
+    { t: "Ajuster la taille du toit", d: "Avec la pyramide sélectionnée, <span class='key'>S</span> pour la redimensionner afin qu'elle recouvre bien le dessus des murs, un peu plus large que le cube si tu veux un débord de toit." },
+    { t: "Poser le toit sur les murs", d: "<span class='key'>G</span> puis <span class='key'>Z</span> pour remonter la pyramide jusqu'à ce que sa base touche le sommet du cube (regarde en vue de face, touche <span class='key'>1</span>, pour bien juger)." },
+    { t: "Orienter la pyramide si besoin", d: "Si la pointe du toit n'est pas bien verticale après le redimensionnement, utilise <span class='key'>R</span> puis <span class='key'>X</span> ou <span class='key'>R</span> puis <span class='key'>Y</span> pour corriger l'inclinaison, en tapant 0 si besoin pour remettre à plat." },
+  ]},
+
+  { phase: "4 · Porte et fenêtres", note: "De simples cubes aplatis, positionnés sur les murs.", items: [
+    { t: "Ajouter un cube pour la porte", d: "<span class='key'>Maj+A</span> → Maillage → Cube. Redimensionne-le en une forme fine et haute avec <span class='key'>S</span>, <span class='key'>X</span> (fin), <span class='key'>S</span>, <span class='key'>Z</span> (haut), <span class='key'>S</span>, <span class='key'>Y</span> (peu profond, presque plat)." },
+    { t: "Coller la porte contre la façade", d: "<span class='key'>G</span> puis l'axe qui fait face à la caméra (souvent <span class='key'>Y</span>) pour avancer la porte jusqu'à ce qu'elle dépasse légèrement du mur, comme collée dessus. <span class='key'>G</span> puis <span class='key'>Z</span> pour la poser au niveau du sol." },
+    { t: "Dupliquer pour créer une fenêtre", d: "Sélectionne le cube de la porte → <span class='key'>Maj+D</span> pour dupliquer → <span class='key'>Échap</span> ou clic droit pour annuler le déplacement automatique et garder la copie au même endroit → puis <span class='key'>S</span> pour la rendre plus carrée et petite (fenêtre), et <span class='key'>G</span>, <span class='key'>Z</span> pour la remonter à hauteur de fenêtre." },
+    { t: "Dupliquer la fenêtre sur les autres murs", d: "Répète <span class='key'>Maj+D</span> sur la fenêtre pour en placer une deuxième, puis <span class='key'>R</span>, <span class='key'>Z</span>, tape <span class='key'>90</span>, <span class='key'>Entrée</span> pour la tourner de 90° et la positionner sur un mur latéral avec <span class='key'>G</span>." },
+  ]},
+
+  { phase: "5 · Assembler la maison", note: "Regrouper toutes les pièces en un seul objet, plus simple à déplacer et texturer.", items: [
+    { t: "Sélectionner toutes les pièces", d: "Clique sur les murs, puis <span class='key'>Maj</span> + clic gauche sur le toit, la porte et chaque fenêtre pour les ajouter à la sélection (contours orange)." },
+    { t: "Fusionner en un seul objet", d: "Toutes les pièces sélectionnées → <span class='key'>Ctrl+J</span> : elles deviennent un seul objet « Maison », qui bouge désormais d'un bloc." },
+  ]},
+
+  { phase: "6 · Matériaux et couleurs", note: "Donner un peu de vie à la maison avant le rendu.", items: [
+    { t: "Ouvrir l'onglet Matériau", d: "Maison sélectionnée → panneau Propriétés à droite (colonne verticale d'icônes) → icône ronde à damier rouge/blanc/gris (Material Properties)." },
+    { t: "Créer un matériau pour les murs", d: "En Mode Édition (<span class='key'>Tab</span>), passe en sélection de faces (3ᵉ petite icône en haut à gauche du viewport, à côté de « sommet » et « arête »), clique sur les faces des murs, puis dans l'onglet Matériau clique « Nouveau » et choisis une couleur claire (ex. beige)." },
+    { t: "Créer un matériau pour le toit", d: "Toujours en Mode Édition, sélectionne les faces du toit, clique le petit « + » en haut de la liste de matériaux (à droite de la liste) pour ajouter un slot, « Nouveau » matériau, couleur plus foncée (ex. rouge brique ou gris ardoise), puis le bouton « Assign » en dessous de la liste pour l'appliquer aux faces sélectionnées." },
+    { t: "Revenir en Mode Objet", d: "<span class='key'>Tab</span> pour sortir du Mode Édition et valider l'affectation des matériaux." },
+  ]},
+
+  { phase: "7 · Éclairage, caméra et rendu", note: "Pour une belle image finale de la maison.", items: [
+    { t: "Ajouter une lumière", d: "<span class='key'>Maj+A</span> → Lumière → « Soleil » (Sun) pour un éclairage extérieur naturel. Oriente-la avec <span class='key'>R</span> pour créer des ombres qui donnent du relief au toit et aux murs." },
+    { t: "Positionner la caméra", d: "S'il n'y a pas de caméra dans la scène : <span class='key'>Maj+A</span> → Caméra. Place-toi dans le viewport à l'angle voulu, puis <span class='key'>Ctrl+Alt+0</span> pour envoyer la caméra sur cette vue exacte." },
+    { t: "Passer en aperçu Matériau", d: "En haut à droite de la fenêtre 3D, rangée de 4 petites sphères : clique sur la 3ᵉ (dégradée) pour voir les couleurs de la maison en temps réel." },
+    { t: "Lancer le rendu final", d: "Touche <span class='key'>F12</span>, ou en haut de l'écran : « Rendu » → « Rendu de l'image »." },
+  ]},
+];
+
+const listEl = document.getElementById('checklist');
+const total = DATA.reduce((n,p)=>n+p.items.length,0);
+document.getElementById('progressTotal').textContent = total;
+
+let state = {};
+const STORAGE_KEY = 'blender-maison-low-poly-checklist';
+
+function render(){
+  listEl.innerHTML = '';
+  DATA.forEach((phase, pi) => {
+    const phaseDiv = document.createElement('div');
+    phaseDiv.className = 'phase';
+    const title = document.createElement('div');
+    title.className = 'phase-title';
+    title.textContent = phase.phase;
+    phaseDiv.appendChild(title);
+    if (phase.note) {
+      const note = document.createElement('div');
+      note.className = 'phase-note';
+      note.textContent = phase.note;
+      phaseDiv.appendChild(note);
+    }
+
+    phase.items.forEach((item, ii) => {
+      const id = pi + '-' + ii;
+      const row = document.createElement('div');
+      row.className = 'item' + (state[id] ? ' done' : '');
+      row.innerHTML = `
+        <div class="checkbox"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <div>
+          <div class="item-title">${item.t}</div>
+          <div class="item-detail">${item.d}</div>
+        </div>`;
+      row.addEventListener('click', () => toggle(id));
+      phaseDiv.appendChild(row);
+    });
+    listEl.appendChild(phaseDiv);
+  });
+  updateProgress();
+}
+
+function updateProgress(){
+  const done = Object.values(state).filter(Boolean).length;
+  document.getElementById('progressCount').textContent = done;
+  document.getElementById('progressFill').style.width = (total ? (done/total*100) : 0) + '%';
+}
+
+async function toggle(id){
+  state[id] = !state[id];
+  render();
+  try { await window.storage.set(STORAGE_KEY, JSON.stringify(state)); } catch(e) { console.warn('Storage indisponible', e); }
+}
+
+document.getElementById('resetBtn').addEventListener('click', async () => {
+  state = {};
+  render();
+  try { await window.storage.set(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+});
+
+(async function init(){
+  try {
+    const res = await window.storage.get(STORAGE_KEY);
+    if (res && res.value) state = JSON.parse(res.value);
+  } catch(e) { /* pas de progression sauvegardée */ }
+  render();
+})();
+</script>
+</body>
+</html>
