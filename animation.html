@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Activité groupe — Personnage mignon animé</title>
+<style>
+  :root{
+    --violet:#6C4AB6;
+    --violet-dark:#4B2E83;
+    --teal:#2FB6A6;
+    --gold:#E3B23C;
+    --bg:#F7F5FB;
+    --card:#FFFFFF;
+    --ink:#2B2440;
+    --ink-soft:#665F7A;
+    --line:#E4DEF2;
+    --done:#EFFBF8;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    background:linear-gradient(160deg,var(--bg) 0%, #EFE9FB 100%);
+    color:var(--ink);
+    padding:24px 16px 60px;
+  }
+  .wrap{max-width:840px;margin:0 auto;}
+  header{
+    background:linear-gradient(120deg,var(--violet-dark),var(--violet));
+    border-radius:18px;
+    padding:28px 26px;
+    color:#fff;
+    position:relative;
+    overflow:hidden;
+    margin-bottom:20px;
+  }
+  header::after{
+    content:"";
+    position:absolute;
+    right:-40px;top:-40px;
+    width:160px;height:160px;
+    background:radial-gradient(circle,var(--gold) 0%, transparent 70%);
+    opacity:0.5;
+  }
+  header .badge{
+    display:inline-block;
+    background:rgba(255,255,255,.18);
+    border:1px solid rgba(255,255,255,.35);
+    border-radius:999px;
+    padding:3px 12px;
+    font-size:.72rem;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    margin-bottom:10px;
+  }
+  header h1{margin:0 0 6px;font-size:1.5rem;letter-spacing:.3px;}
+  header p{margin:0;opacity:.9;font-size:.92rem;}
+  .toolbar{
+    display:flex;justify-content:space-between;align-items:center;
+    gap:12px;flex-wrap:wrap;margin:16px 0 20px;
+  }
+  .lang-toggle{
+    background:var(--card);border:1px solid var(--line);
+    border-radius:999px;padding:4px;display:flex;gap:4px;
+  }
+  .lang-toggle button{
+    border:none;background:transparent;
+    padding:7px 16px;border-radius:999px;
+    font-weight:600;font-size:.85rem;
+    cursor:pointer;color:var(--ink-soft);transition:.2s;
+  }
+  .lang-toggle button.active{background:var(--violet);color:#fff;}
+  .progress-wrap{flex:1;min-width:180px;}
+  .progress-bar{background:var(--line);border-radius:999px;height:10px;overflow:hidden;}
+  .progress-fill{
+    height:100%;background:linear-gradient(90deg,var(--teal),var(--gold));
+    width:0%;transition:width .3s ease;
+  }
+  .progress-label{font-size:.78rem;color:var(--ink-soft);margin-top:4px;}
+  .reset-btn{
+    border:1px solid var(--line);background:var(--card);
+    color:var(--ink-soft);border-radius:10px;padding:8px 14px;
+    font-size:.8rem;cursor:pointer;
+  }
+
+  .infogrid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:12px;margin-bottom:14px;
+  }
+  .infocard{
+    background:var(--card);border:1px solid var(--line);
+    border-radius:14px;padding:14px 16px;
+  }
+  .infocard .label{
+    font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;
+    color:var(--ink-soft);margin-bottom:4px;
+  }
+  .infocard .value{font-size:.95rem;font-weight:700;color:var(--violet-dark);}
+  .infocard .sub{font-size:.74rem;color:var(--ink-soft);margin-top:2px;}
+
+  .glossary{
+    background:var(--card);border:1px solid var(--line);
+    border-radius:16px;padding:16px 18px;margin-bottom:18px;
+  }
+  .glossary h3{
+    margin:0 0 10px;font-size:.95rem;color:var(--violet-dark);
+    display:flex;align-items:center;gap:8px;
+  }
+  .glossary-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:10px 18px;
+  }
+  .gterm{font-size:.85rem;}
+  .gterm b{color:var(--violet-dark);}
+  .gterm span{color:var(--ink-soft);}
+
+  section.block{
+    background:var(--card);border:1px solid var(--line);
+    border-radius:16px;margin-bottom:16px;overflow:hidden;
+  }
+  .block-head{
+    display:flex;align-items:center;gap:12px;padding:16px 18px;
+    background:linear-gradient(90deg,rgba(108,74,182,.06),transparent);
+    border-bottom:1px solid var(--line);
+  }
+  .block-num{
+    width:30px;height:30px;border-radius:50%;
+    background:var(--violet);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:.85rem;flex-shrink:0;
+  }
+  .block-head h2{margin:0;font-size:1.05rem;color:var(--violet-dark);flex:1;}
+  .block-time{
+    font-size:.74rem;font-weight:700;color:var(--violet);
+    background:#F1ECFB;border-radius:999px;padding:4px 10px;flex-shrink:0;
+  }
+  .block-body{padding:6px 12px 12px;}
+  .block-intro{padding:0 18px 10px;font-size:.88rem;color:var(--ink-soft);}
+  .item{
+    display:flex;gap:12px;padding:10px 10px;border-radius:10px;
+    margin:4px 0;cursor:pointer;transition:.15s;
+  }
+  .item:hover{background:#F9F7FD;}
+  .item.done{background:var(--done);}
+  .item.done .item-text .main{text-decoration:line-through;color:var(--ink-soft);}
+  .checkbox{
+    width:20px;height:20px;flex-shrink:0;margin-top:2px;
+    border-radius:6px;border:2px solid var(--violet);
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-size:12px;font-weight:700;background:#fff;
+  }
+  .item.done .checkbox{background:var(--teal);border-color:var(--teal);}
+  .item-text .main{font-size:.94rem;font-weight:600;color:var(--ink);}
+  .meta{margin-top:5px;display:flex;flex-direction:column;gap:2px;}
+  .meta span{font-size:.8rem;line-height:1.4;color:var(--ink-soft);}
+  .meta .loc{color:var(--violet-dark);}
+  .meta .why{color:#4C7C74;}
+  .meta .warn{color:#A6702B;}
+  .meta .ok{color:#2E8B78;font-weight:600;}
+  .meta .ex{color:#5B4A8A;font-style:italic;}
+  kbd{
+    background:#efeaf9;border:1px solid var(--line);
+    border-radius:5px;padding:1px 6px;font-size:.78rem;
+    font-family:Consolas,monospace;color:var(--violet-dark);
+  }
+  footer{text-align:center;color:var(--ink-soft);font-size:.78rem;margin-top:24px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <span class="badge" data-fr="Activité en groupe" data-en="Group activity">Activité en groupe</span>
+    <h1 data-fr="Un personnage mignon… qui prend vie !" data-en="A cute character… that comes to life!">Un personnage mignon… qui prend vie !</h1>
+    <p data-fr="Blender • Modélisation low poly + première animation par keyframes" data-en="Blender • Low poly modeling + first keyframe animation">Blender • Modélisation low poly + première animation par keyframes</p>
+  </header>
+
+  <div class="infogrid">
+    <div class="infocard">
+      <div class="label" data-fr="Groupes" data-en="Teams">Groupes</div>
+      <div class="value" data-fr="2 à 3 personnes" data-en="2 to 3 people">2 à 3 personnes</div>
+      <div class="sub" data-fr="≈ 5 groupes pour 14 personnes" data-en="≈ 5 teams for 14 people">≈ 5 groupes pour 14 personnes</div>
+    </div>
+    <div class="infocard">
+      <div class="label" data-fr="Durée totale" data-en="Total duration">Durée totale</div>
+      <div class="value" data-fr="≈ 2h30" data-en="≈ 2h30">≈ 2h30</div>
+      <div class="sub" data-fr="Détail par étape ci-dessous" data-en="Breakdown by step below">Détail par étape ci-dessous</div>
+    </div>
+    <div class="infocard">
+      <div class="label" data-fr="Budget géométrie" data-en="Geometry budget">Budget géométrie</div>
+      <div class="value" data-fr="≈ 300–800 faces" data-en="≈ 300–800 faces">≈ 300–800 faces</div>
+      <div class="sub" data-fr="Tout le personnage assemblé" data-en="Whole character combined">Tout le personnage assemblé</div>
+    </div>
+    <div class="infocard">
+      <div class="label" data-fr="Animation" data-en="Animation">Animation</div>
+      <div class="value" data-fr="24 images / sec" data-en="24 frames / sec">24 images / sec</div>
+      <div class="sub" data-fr="Boucle de 20 à 40 images (~1 à 1,5 s)" data-en="Loop of 20 to 40 frames (~1 to 1.5 s)">Boucle de 20 à 40 images (~1 à 1,5 s)</div>
+    </div>
+  </div>
+
+  <div class="glossary">
+    <h3 data-fr="📘 Vocabulaire à connaître avant de commencer" data-en="📘 Vocabulary to know before starting">📘 Vocabulaire à connaître avant de commencer</h3>
+    <div class="glossary-grid" id="glossaryGrid"></div>
+  </div>
+
+  <div class="toolbar">
+    <div class="lang-toggle">
+      <button id="btn-fr" class="active" onclick="setLang('fr')">FR</button>
+      <button id="btn-en" onclick="setLang('en')">EN</button>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-label" id="progressLabel">0 / 0</div>
+    </div>
+    <button class="reset-btn" onclick="resetAll()" data-fr="↺ Réinitialiser" data-en="↺ Reset">↺ Réinitialiser</button>
+  </div>
+
+  <div id="blocks"></div>
+
+  <footer data-fr="Fiche à projeter ou imprimer par groupe · progression sauvegardée dans ce navigateur." data-en="Sheet to project or print per team · progress saved in this browser.">
+    Fiche à projeter ou imprimer par groupe · progression sauvegardée dans ce navigateur.
+  </footer>
+</div>
+
+<script>
+const GLOSSARY = [
+  { fr:{t:"Keyframe (image clé)", d:"L'état enregistré d'un objet (position, rotation ou échelle) à une image précise de la Timeline."}, en:{t:"Keyframe", d:"The recorded state of an object (location, rotation or scale) at a specific frame in the Timeline."} },
+  { fr:{t:"Timeline / Playhead", d:"La barre en bas de l'écran qui montre les images du temps ; le curseur vertical bleu est le playhead, il indique l'image affichée."}, en:{t:"Timeline / Playhead", d:"The bar at the bottom of the screen showing frames over time; the blue vertical cursor is the playhead, showing the current frame."} },
+  { fr:{t:"Frame (image)", d:"Une unité de temps dans l'animation. À 24 fps, 24 images = 1 seconde."}, en:{t:"Frame", d:"A unit of time in the animation. At 24 fps, 24 frames = 1 second."} },
+  { fr:{t:"Interpolation", d:"La façon dont Blender comble l'écart entre deux keyframes. Par défaut : Bezier (mouvement adouci)."}, en:{t:"Interpolation", d:"How Blender fills the gap between two keyframes. Default: Bezier (eased motion)."} },
+  { fr:{t:"Boucle (loop)", d:"Une animation qui se répète à l'identique : la dernière keyframe reprend exactement l'état de la première."}, en:{t:"Loop", d:"An animation that repeats identically: the last keyframe matches the first one exactly."} },
+  { fr:{t:"Parenting (Ctrl+P)", d:"Lier un objet « enfant » à un objet « parent » pour que ses transformations suivent celles du parent."}, en:{t:"Parenting (Ctrl+P)", d:"Linking a « child » object to a « parent » so its transforms follow the parent's."} },
+];
+
+const DATA = [
+  {
+    title: {fr:"0. Consigne", en:"0. Brief"},
+    intro: {
+      fr:"Par équipe de 2 à 3, imaginez et modélisez un petit personnage mignon en low poly (≈300 à 800 faces), puis donnez-lui vie avec une animation simple en boucle de 20 à 40 images (rebond, balancement, rotation…). Contrainte technique : pas de rig, pas de squelette — uniquement des keyframes sur Location / Rotation / Scale. Amusez-vous, il n'y a pas une seule bonne réponse !",
+      en:"In teams of 2 to 3, imagine and model a small cute low poly character (≈300 to 800 faces), then bring it to life with a simple looping animation of 20 to 40 frames (bounce, sway, rotation…). Technical constraint: no rig, no armature — only keyframes on Location / Rotation / Scale. Have fun, there's no single right answer!"
+    },
+    items: []
+  },
+  {
+    title: {fr:"1. Idéation express", en:"1. Quick ideation"},
+    time: {fr:"10 min", en:"10 min"},
+    items: [
+      {
+        main:{fr:"Choisir l'identité du personnage : un animal, une créature, un objet vivant…", en:"Pick the character's identity: an animal, a creature, a living object…"},
+        why:{fr:"💡 Un design simple et lisible se modélise plus vite en low poly qu'un design détaillé", en:"💡 A simple, readable design is faster to model in low poly than a detailed one"},
+        ex:{fr:"Ex. : un petit renard, un caillou vivant, une théière curieuse", en:"E.g.: a small fox, a living pebble, a curious teapot"},
+      },
+      {
+        main:{fr:"Griffonner un croquis rapide (papier ou tableau) : 3 à 5 formes de base suffisent", en:"Sketch it quickly (paper or whiteboard): 3 to 5 basic shapes are enough"},
+        loc:{fr:"📍 Penser en primitives : sphère = tête, cube = corps, cylindre = pattes, cône = oreilles", en:"📍 Think in primitives: sphere = head, cube = body, cylinder = legs, cone = ears"},
+      },
+      {
+        main:{fr:"Décider en 2 mots de sa « personnalité » (timide, joyeux, maladroit…)", en:"Decide in 2 words its « personality » (shy, joyful, clumsy…)"},
+        why:{fr:"💡 Ça guidera le choix d'animation à l'étape 4 : rebond joyeux ≠ balancement timide ≠ tremblement maladroit", en:"💡 This will guide the animation choice in step 4: a joyful bounce ≠ a shy sway ≠ a clumsy shiver"},
+      },
+      {
+        main:{fr:"Vérifier que la silhouette reste reconnaissable à distance (5 mètres, en un coup d'œil)", en:"Check the silhouette stays recognizable from a distance (5 meters, at a glance)"},
+        warn:{fr:"⚠️ En low poly, c'est la silhouette qui raconte le personnage, pas les détails", en:"⚠️ In low poly, the silhouette tells the character, not the details"},
+      },
+    ]
+  },
+  {
+    title: {fr:"2. Modéliser le personnage", en:"2. Model the character"},
+    time: {fr:"45–60 min", en:"45–60 min"},
+    items: [
+      {
+        main:{fr:"Corps principal : ajouter une UV Sphere ou un Cube, réduire ses segments pour rester low poly", en:"Main body: add a UV Sphere or a Cube, reduce its segments to stay low poly"},
+        loc:{fr:"📍 <kbd>Shift+A</kbd> → Mesh → UV Sphere → ouvrir le panneau F9 en bas à gauche → réduire Segments (~8) et Rings (~6)", en:"📍 <kbd>Shift+A</kbd> → Mesh → UV Sphere → open the F9 panel bottom-left → reduce Segments (~8) and Rings (~6)"},
+        why:{fr:"💡 Le panneau F9 (« Redo Last ») permet d'ajuster les paramètres juste après avoir ajouté l'objet", en:"💡 The F9 panel (« Redo Last ») lets you adjust parameters right after adding the object"},
+      },
+      {
+        main:{fr:"Tête, pattes, bras, queue : ajouter cylindres/cônes, les redimensionner et positionner", en:"Head, legs, arms, tail: add cylinders/cones, resize and position them"},
+        loc:{fr:"📍 <kbd>Shift+A</kbd> pour ajouter → <kbd>S</kbd> pour l'échelle → <kbd>G</kbd> puis <kbd>X</kbd>/<kbd>Y</kbd>/<kbd>Z</kbd> pour positionner sur un axe précis", en:"📍 <kbd>Shift+A</kbd> to add → <kbd>S</kbd> to scale → <kbd>G</kbd> then <kbd>X</kbd>/<kbd>Y</kbd>/<kbd>Z</kbd> to move along one axis"},
+      },
+      {
+        main:{fr:"Détails du visage (yeux, museau) : petites sphères ou cubes aplatis, positionnés avec précision", en:"Face details (eyes, snout): small spheres or flattened cubes, positioned precisely"},
+        warn:{fr:"⚠️ Zoomer avant de positionner un petit élément : à l'échelle du personnage, un demi-centimètre d'écart se voit beaucoup", en:"⚠️ Zoom in before placing a small element: at the character's scale, half a centimeter off is very visible"},
+      },
+      {
+        main:{fr:"Vérifier régulièrement les proportions en dézoomant (vue d'ensemble)", en:"Regularly check proportions by zooming out (overview)"},
+        why:{fr:"💡 Un détail trop gros ou trop petit casse l'effet mignon plus vite qu'une forme imparfaite", en:"💡 An oversized or undersized detail breaks the cute effect faster than an imperfect shape"},
+      },
+      {
+        main:{fr:"Casser un peu la symétrie parfaite (oreille légèrement penchée, patte tournée) pour un rendu plus vivant", en:"Break the perfect symmetry a little (a slightly tilted ear, a turned paw) for a livelier look"},
+        loc:{fr:"📍 Même technique que pour les cailloux/branches de l'épisode 1 : léger <kbd>R</kbd> ou <kbd>S</kbd> <kbd>Shift+Z</kbd> sur un élément dupliqué", en:"📍 Same trick as the rocks/branches from episode 1: slight <kbd>R</kbd> or <kbd>S</kbd> <kbd>Shift+Z</kbd> on a duplicated element"},
+      },
+      {
+        main:{fr:"Choix technique : regrouper les pièces en un seul mesh (Ctrl+J) ou les garder séparées et liées (Ctrl+P)", en:"Technical choice: merge the parts into one mesh (Ctrl+J) or keep them separate and parented (Ctrl+P)"},
+        why:{fr:"💡 Un seul mesh est plus simple à colorer (comme le sapin) ; des objets séparés + parenting sont plus simples à animer indépendamment (ex. juste les oreilles qui bougent)", en:"💡 One mesh is simpler to color (like the tree); separate parented objects are easier to animate independently (e.g. just the ears moving)"},
+        loc:{fr:"📍 Pour parenter : sélectionner l'enfant puis le parent en dernier → <kbd>Ctrl+P</kbd> → Object", en:"📍 To parent: select the child then the parent last → <kbd>Ctrl+P</kbd> → Object"},
+      },
+    ]
+  },
+  {
+    title: {fr:"3. Habiller en couleurs", en:"3. Add colors"},
+    time: {fr:"20–30 min", en:"20–30 min"},
+    items: [
+      {
+        main:{fr:"Créer un matériau par zone (corps, yeux, oreilles, ventre…) sur l'onglet Material Properties", en:"Create one material per zone (body, eyes, ears, belly…) in the Material Properties tab"},
+        loc:{fr:"📍 Bille rouge dans les Properties → New → renommer chaque matériau clairement (« Corps », « Yeux »…)", en:"📍 Red ball icon in Properties → New → clearly rename each material (« Body », « Eyes »…)"},
+      },
+      {
+        main:{fr:"Si le personnage est un seul mesh : sélectionner les faces concernées puis cliquer sur Assign", en:"If the character is a single mesh: select the relevant faces then click Assign"},
+        loc:{fr:"📍 Même méthode que pour le tronc/feuillage de l'épisode 2 : Edit Mode → sélection de faces → choisir le slot → Assign", en:"📍 Same method as the trunk/foliage in episode 2: Edit Mode → face selection → pick the slot → Assign"},
+      },
+      {
+        main:{fr:"Si le personnage a des objets séparés identiques (2 oreilles, 2 yeux) : colorer l'un puis Ctrl+L → Link Materials sur l'autre", en:"If the character has separate identical objects (2 ears, 2 eyes): color one, then Ctrl+L → Link Materials on the other"},
+        warn:{fr:"⚠️ Toujours choisir « Link Materials », jamais « Link Object Data » (sinon les deux objets deviennent des copies du même maillage)", en:"⚠️ Always choose « Link Materials », never « Link Object Data » (otherwise both objects become copies of the same mesh)"},
+      },
+      {
+        main:{fr:"Choisir une palette de 3 à 4 couleurs maximum, cohérente et pas trop saturée", en:"Choose a palette of 3 to 4 colors max, coherent and not too saturated"},
+        why:{fr:"💡 Une palette limitée rend un personnage plus reconnaissable qu'une palette chargée", en:"💡 A limited palette makes a character more recognizable than a busy one"},
+      },
+    ]
+  },
+  {
+    title: {fr:"4. Première animation par keyframes", en:"4. First keyframe animation"},
+    time: {fr:"30–40 min", en:"30–40 min"},
+    items: [
+      {
+        main:{fr:"Ouvrir la Timeline en bas de l'écran et se placer sur l'image 1", en:"Open the Timeline at the bottom of the screen and go to frame 1"},
+        loc:{fr:"📍 Cliquer dans la barre de la Timeline, ou taper « 1 » dans le champ d'image en haut à gauche de la Timeline", en:"📍 Click in the Timeline bar, or type « 1 » in the frame field at the top-left of the Timeline"},
+      },
+      {
+        main:{fr:"Sélectionner le personnage (ou l'objet parent), insérer une 1ère keyframe : la position de départ", en:"Select the character (or the parent object), insert a 1st keyframe: the starting pose"},
+        loc:{fr:"📍 Survoler le viewport 3D → <kbd>I</kbd> → choisir Location (rebond), Rotation (balancement) ou LocRotScale (les deux)", en:"📍 Hover the 3D viewport → <kbd>I</kbd> → choose Location (bounce), Rotation (sway) or LocRotScale (both)"},
+      },
+      {
+        main:{fr:"Avancer à l'image 10 à 20 : déplacer/tourner le personnage, insérer une 2ème keyframe", en:"Move to frame 10–20: move/rotate the character, insert a 2nd keyframe"},
+        loc:{fr:"📍 Taper le numéro d'image, ou flèche droite du clavier pour avancer d'une image à la fois", en:"📍 Type the frame number, or right arrow key to advance one frame at a time"},
+        ex:{fr:"Ex. rebond : <kbd>G</kbd> <kbd>Z</kbd> 0.3 puis Entrée. Ex. balancement : <kbd>R</kbd> <kbd>X</kbd> 15 puis Entrée", en:"E.g. bounce: <kbd>G</kbd> <kbd>Z</kbd> 0.3 then Enter. E.g. sway: <kbd>R</kbd> <kbd>X</kbd> 15 then Enter"},
+      },
+      {
+        main:{fr:"Avancer encore (image 20 à 40) et revenir exactement à la position de départ pour boucler proprement", en:"Move forward again (frame 20 to 40) and return exactly to the starting pose to loop cleanly"},
+        loc:{fr:"📍 Dans la Timeline, cliquer sur le losange jaune de la 1ère keyframe pour la sélectionner → <kbd>Shift+D</kbd> → glisser jusqu'à la dernière image → clic gauche pour valider", en:"📍 In the Timeline, click the yellow diamond of the 1st keyframe to select it → <kbd>Shift+D</kbd> → drag it to the last frame → left-click to confirm"},
+        warn:{fr:"⚠️ Sans ce retour identique à la position de départ, l'animation « saute » visiblement à chaque répétition de la boucle", en:"⚠️ Without this exact return to the start pose, the animation visibly « jumps » each time the loop repeats"},
+      },
+      {
+        main:{fr:"Régler la fin de la Timeline (champ « End » en haut à droite) sur la dernière image de la boucle", en:"Set the Timeline's end (« End » field top-right) to the loop's last frame"},
+        loc:{fr:"📍 Ex. si la boucle fait 30 images : End = 30, pour que la lecture s'arrête pile à la boucle", en:"📍 E.g. if the loop is 30 frames: End = 30, so playback stops exactly at the loop"},
+      },
+      {
+        main:{fr:"Lire l'animation avec Espace et ajuster le timing (nombre d'images entre les keyframes) si besoin", en:"Play the animation with Space and adjust timing (frames between keyframes) if needed"},
+        ok:{fr:"✅ Le personnage bouge en boucle, à 24 images/seconde, sans à-coup visible", en:"✅ The character loops at 24 frames/second, with no visible jump"},
+      },
+    ]
+  },
+  {
+    title: {fr:"5. Bonus (si le temps le permet)", en:"5. Bonus (if time allows)"},
+    time: {fr:"selon le temps restant", en:"depending on time left"},
+    items: [
+      {
+        main:{fr:"Adoucir le mouvement dans le Graph Editor : sélectionner les keyframes → T → Ease In/Out", en:"Smooth the motion in the Graph Editor: select the keyframes → T → Ease In/Out"},
+        why:{fr:"💡 L'interpolation par défaut (Bezier) est déjà douce ; Ease In/Out accentue l'accélération/décélération", en:"💡 The default interpolation (Bezier) is already smooth; Ease In/Out emphasizes acceleration/deceleration"},
+      },
+      {
+        main:{fr:"Ajouter un mouvement secondaire léger et décalé (ex. les oreilles bougent 2-3 images après le corps)", en:"Add a light, offset secondary motion (e.g. the ears move 2-3 frames after the body)"},
+        why:{fr:"💡 Un léger décalage entre les parties donne une impression de matière plus vivante (principe d'animation « overlap »)", en:"💡 A slight offset between parts gives a livelier feel (the « overlap » animation principle)"},
+      },
+      {
+        main:{fr:"Ajouter un petit élément de décor (galet, feuille) pour donner un contexte", en:"Add a small prop (pebble, leaf) to give some context"},
+      },
+      {
+        main:{fr:"Ajouter une lumière type Area pour un rendu plus doux, façon épisode 2", en:"Add an Area light for a softer look, like in episode 2"},
+      },
+    ]
+  },
+  {
+    title: {fr:"6. Présentation", en:"6. Presentation"},
+    time: {fr:"2 min / groupe", en:"2 min / team"},
+    items: [
+      {
+        main:{fr:"Nommer le personnage et raconter en une phrase son inspiration", en:"Name the character and describe its inspiration in one sentence"},
+      },
+      {
+        main:{fr:"Montrer la boucle d'animation en lecture directe dans Blender (Espace)", en:"Show the animation loop playing live in Blender (Space)"},
+      },
+      {
+        main:{fr:"Partager une difficulté technique rencontrée et comment elle a été résolue", en:"Share one technical difficulty encountered and how it was solved"},
+        why:{fr:"💡 C'est souvent le partage des blocages qui aide le plus les autres groupes", en:"💡 Sharing what went wrong is often what helps the other teams the most"},
+      },
+    ]
+  },
+];
+
+let lang = 'fr';
+const STORAGE_KEY = 'activite_groupe_personnage_anime_progress_v2';
+
+function loadProgress(){
+  try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }catch(e){ return {}; }
+}
+function saveProgress(p){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(p));
+}
+
+function renderGlossary(){
+  const grid = document.getElementById('glossaryGrid');
+  grid.innerHTML = '';
+  GLOSSARY.forEach(g => {
+    const entry = g[lang];
+    const div = document.createElement('div');
+    div.className = 'gterm';
+    div.innerHTML = `<b>${entry.t}</b> — <span>${entry.d}</span>`;
+    grid.appendChild(div);
+  });
+}
+
+function render(){
+  const container = document.getElementById('blocks');
+  container.innerHTML = '';
+  const progress = loadProgress();
+  let total = 0, done = 0;
+
+  DATA.forEach((block, bi) => {
+    const section = document.createElement('section');
+    section.className = 'block';
+
+    const head = document.createElement('div');
+    head.className = 'block-head';
+    head.innerHTML = `<div class="block-num">${bi}</div><h2>${block.title[lang]}</h2>` +
+      (block.time ? `<div class="block-time">⏱ ${block.time[lang]}</div>` : '');
+    section.appendChild(head);
+
+    if(block.intro){
+      const intro = document.createElement('div');
+      intro.className = 'block-intro';
+      intro.textContent = block.intro[lang];
+      section.appendChild(intro);
+    }
+
+    const body = document.createElement('div');
+    body.className = 'block-body';
+
+    block.items.forEach((it, ii) => {
+      total++;
+      const key = `${bi}-${ii}`;
+      const isDone = !!progress[key];
+      if(isDone) done++;
+
+      const item = document.createElement('div');
+      item.className = 'item' + (isDone ? ' done' : '');
+      item.onclick = () => {
+        const p = loadProgress();
+        p[key] = !p[key];
+        saveProgress(p);
+        render();
+      };
+
+      let metaHtml = '<div class="meta">';
+      if(it.loc) metaHtml += `<span class="loc">${it.loc[lang]}</span>`;
+      if(it.why) metaHtml += `<span class="why">${it.why[lang]}</span>`;
+      if(it.ex) metaHtml += `<span class="ex">${it.ex[lang]}</span>`;
+      if(it.warn) metaHtml += `<span class="warn">${it.warn[lang]}</span>`;
+      if(it.ok) metaHtml += `<span class="ok">${it.ok[lang]}</span>`;
+      metaHtml += '</div>';
+
+      item.innerHTML = `
+        <div class="checkbox">${isDone ? '✓' : ''}</div>
+        <div class="item-text">
+          <div class="main">${it.main[lang]}</div>
+          ${metaHtml}
+        </div>
+      `;
+      body.appendChild(item);
+    });
+
+    section.appendChild(body);
+    container.appendChild(section);
+  });
+
+  document.getElementById('progressFill').style.width = total ? (done/total*100)+'%' : '0%';
+  document.getElementById('progressLabel').textContent = `${done} / ${total}`;
+
+  document.querySelectorAll('[data-fr]').forEach(el=>{
+    el.textContent = el.getAttribute('data-'+lang);
+  });
+
+  renderGlossary();
+}
+
+function setLang(l){
+  lang = l;
+  document.getElementById('btn-fr').classList.toggle('active', l==='fr');
+  document.getElementById('btn-en').classList.toggle('active', l==='en');
+  render();
+}
+
+function resetAll(){
+  localStorage.removeItem(STORAGE_KEY);
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
