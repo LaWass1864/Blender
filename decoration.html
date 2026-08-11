@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checklist — Couleurs, Caméra & Lumières</title>
+<style>
+  :root{
+    --violet:#6C4AB6;
+    --violet-dark:#4B2E83;
+    --teal:#2FB6A6;
+    --gold:#E3B23C;
+    --bg:#F7F5FB;
+    --card:#FFFFFF;
+    --ink:#2B2440;
+    --ink-soft:#665F7A;
+    --line:#E4DEF2;
+    --done:#EFFBF8;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    background:linear-gradient(160deg,var(--bg) 0%, #EFE9FB 100%);
+    color:var(--ink);
+    padding:24px 16px 60px;
+  }
+  .wrap{max-width:760px;margin:0 auto;}
+  header{
+    background:linear-gradient(120deg,var(--violet-dark),var(--violet));
+    border-radius:18px;
+    padding:28px 26px;
+    color:#fff;
+    position:relative;
+    overflow:hidden;
+    margin-bottom:20px;
+  }
+  header::after{
+    content:"";
+    position:absolute;
+    right:-40px;top:-40px;
+    width:160px;height:160px;
+    background:radial-gradient(circle,var(--gold) 0%, transparent 70%);
+    opacity:0.5;
+  }
+  header .badge{
+    display:inline-block;
+    background:rgba(255,255,255,.18);
+    border:1px solid rgba(255,255,255,.35);
+    border-radius:999px;
+    padding:3px 12px;
+    font-size:.72rem;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    margin-bottom:10px;
+  }
+  header h1{margin:0 0 6px;font-size:1.5rem;letter-spacing:.3px;}
+  header p{margin:0;opacity:.9;font-size:.92rem;}
+  .toolbar{
+    display:flex;justify-content:space-between;align-items:center;
+    gap:12px;flex-wrap:wrap;margin:16px 0 20px;
+  }
+  .lang-toggle{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:4px;
+    display:flex;gap:4px;
+  }
+  .lang-toggle button{
+    border:none;background:transparent;
+    padding:7px 16px;border-radius:999px;
+    font-weight:600;font-size:.85rem;
+    cursor:pointer;color:var(--ink-soft);
+    transition:.2s;
+  }
+  .lang-toggle button.active{background:var(--violet);color:#fff;}
+  .progress-wrap{flex:1;min-width:180px;}
+  .progress-bar{
+    background:var(--line);border-radius:999px;height:10px;overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;background:linear-gradient(90deg,var(--teal),var(--gold));
+    width:0%;transition:width .3s ease;
+  }
+  .progress-label{font-size:.78rem;color:var(--ink-soft);margin-top:4px;}
+  .reset-btn{
+    border:1px solid var(--line);background:var(--card);
+    color:var(--ink-soft);border-radius:10px;padding:8px 14px;
+    font-size:.8rem;cursor:pointer;
+  }
+  section.block{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:16px;
+    margin-bottom:16px;
+    overflow:hidden;
+  }
+  .block-head{
+    display:flex;align-items:center;gap:12px;
+    padding:16px 18px;
+    background:linear-gradient(90deg,rgba(108,74,182,.06),transparent);
+    border-bottom:1px solid var(--line);
+  }
+  .block-num{
+    width:30px;height:30px;border-radius:50%;
+    background:var(--violet);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:.85rem;flex-shrink:0;
+  }
+  .block-head h2{margin:0;font-size:1.05rem;color:var(--violet-dark);}
+  .block-body{padding:6px 12px 12px;}
+  .item{
+    display:flex;gap:12px;
+    padding:10px 10px;
+    border-radius:10px;
+    margin:4px 0;
+    cursor:pointer;
+    transition:.15s;
+  }
+  .item:hover{background:#F9F7FD;}
+  .item.done{background:var(--done);}
+  .item.done .item-text .main{text-decoration:line-through;color:var(--ink-soft);}
+  .checkbox{
+    width:20px;height:20px;flex-shrink:0;margin-top:2px;
+    border-radius:6px;border:2px solid var(--violet);
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-size:12px;font-weight:700;
+    background:#fff;
+  }
+  .item.done .checkbox{background:var(--teal);border-color:var(--teal);}
+  .item-text .main{font-size:.94rem;font-weight:600;color:var(--ink);}
+  .meta{margin-top:5px;display:flex;flex-direction:column;gap:2px;}
+  .meta span{font-size:.8rem;line-height:1.35;color:var(--ink-soft);}
+  .meta .loc{color:var(--violet-dark);}
+  .meta .why{color:#4C7C74;}
+  .meta .warn{color:#A6702B;}
+  .meta .ok{color:#2E8B78;font-weight:600;}
+  .swatch{
+    display:inline-block;width:10px;height:10px;border-radius:50%;
+    margin-right:5px;vertical-align:middle;border:1px solid rgba(0,0,0,.15);
+  }
+  kbd{
+    background:#efeaf9;border:1px solid var(--line);
+    border-radius:5px;padding:1px 6px;font-size:.78rem;
+    font-family:Consolas,monospace;color:var(--violet-dark);
+  }
+  footer{text-align:center;color:var(--ink-soft);font-size:.78rem;margin-top:24px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <span class="badge" data-fr="Épisode 2" data-en="Episode 2">Épisode 2</span>
+    <h1 data-fr="Checklist — Couleurs, Caméra & Lumières" data-en="Checklist — Colors, Camera & Lighting">Checklist — Couleurs, Caméra & Lumières</h1>
+    <p data-fr="Blender • Suite du tuto low poly de Brago • sur la scène de l'épisode 1" data-en="Blender • Follow-up to Brago's low poly tutorial • builds on episode 1's scene">Blender • Suite du tuto low poly de Brago</p>
+  </header>
+
+  <div class="toolbar">
+    <div class="lang-toggle">
+      <button id="btn-fr" class="active" onclick="setLang('fr')">FR</button>
+      <button id="btn-en" onclick="setLang('en')">EN</button>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-label" id="progressLabel">0 / 0</div>
+    </div>
+    <button class="reset-btn" onclick="resetAll()" data-fr="↺ Réinitialiser" data-en="↺ Reset">↺ Réinitialiser</button>
+  </div>
+
+  <div id="blocks"></div>
+
+  <footer data-fr="Progression sauvegardée automatiquement dans ce navigateur." data-en="Progress is saved automatically in this browser.">
+    Progression sauvegardée automatiquement dans ce navigateur.
+  </footer>
+</div>
+
+<script>
+const DATA = [
+  {
+    title: {fr:"1. Repérer les modes d'affichage", en:"1. Get familiar with the viewport shading modes"},
+    items: [
+      {
+        main:{fr:"Identifier les 4 modes d'affichage du viewport", en:"Identify the 4 viewport shading modes"},
+        loc:{fr:"📍 En haut à droite du viewport : Wireframe / Solid / Material Preview / Rendered", en:"📍 Top-right of viewport: Wireframe / Solid / Material Preview / Rendered"},
+        why:{fr:"💡 Solid = mode par défaut sans couleurs, Material Preview = couleurs visibles, Rendered = aperçu du rendu final avec lumières", en:"💡 Solid = default mode without colors, Material Preview = colors visible, Rendered = live preview of the final render with lights"},
+      },
+    ]
+  },
+  {
+    title: {fr:"2. Matériau du sol (terre)", en:"2. Ground material (dirt)"},
+    items: [
+      {
+        main:{fr:"Sélectionner le sol, supprimer le matériau de base par défaut", en:"Select the ground, remove the default base material"},
+        loc:{fr:"📍 Onglet Material Properties (la bille rouge)", en:"📍 Material Properties tab (the red ball icon)"},
+      },
+      {
+        main:{fr:"Créer un nouveau matériau « terre », couleur marron/terre", en:"Create a new « ground » material, brownish/earthy color"},
+        loc:{fr:"📍 New → renommer → Base Color <span class='swatch' style='background:#8B5A2B'></span>", en:"📍 New → rename → Base Color <span class='swatch' style='background:#8B5A2B'></span>"},
+      },
+    ]
+  },
+  {
+    title: {fr:"3. Matériaux multiples sur un même objet (herbe / eau)", en:"3. Multiple materials on one object (grass / water)"},
+    items: [
+      {
+        main:{fr:"Créer un matériau « herbe » vert peu saturé et l'assigner à tout le sol", en:"Create an unsaturated green « grass » material and assign it to the whole ground"},
+        warn:{fr:"⚠️ Une couleur trop saturée fatigue vite l'œil sur une scène entière", en:"⚠️ An overly saturated color quickly tires the eye across a whole scene"},
+      },
+      {
+        main:{fr:"Ajouter un second slot de matériau « eau » (bleu)", en:"Add a second material slot for « water » (blue)"},
+        loc:{fr:"📍 Bouton <kbd>+</kbd> dans la liste de matériaux → New", en:"📍 <kbd>+</kbd> button in the material list → New"},
+      },
+      {
+        main:{fr:"En Edit Mode, sélectionner les faces de la rivière puis Assign", en:"In Edit Mode, select the river faces then Assign"},
+        loc:{fr:"📍 Sélection de faces (clic + Shift) → sélectionner le slot « eau » → bouton Assign", en:"📍 Face select (click + Shift) → select the « water » slot → Assign button"},
+        why:{fr:"💡 Sans Assign, toutes les faces gardent la première couleur du slot 1", en:"💡 Without Assign, all faces keep the first slot's color"},
+        ok:{fr:"✅ La rivière devient bleue, le reste du sol reste vert", en:"✅ The river turns blue, the rest of the ground stays green"},
+      },
+    ]
+  },
+  {
+    title: {fr:"4. Couleurs du sapin (feuillage + tronc)", en:"4. Tree colors (foliage + trunk)"},
+    items: [
+      {
+        main:{fr:"Isoler un sapin, créer un matériau vert foncé pour le feuillage", en:"Isolate one tree, create a dark green material for the foliage"},
+      },
+      {
+        main:{fr:"Sélectionner tout le tronc en un clic avec Ctrl + Pavé Num +", en:"Select the whole trunk in one click with Ctrl + Numpad +"},
+        loc:{fr:"📍 Sélectionner un segment du cylindre → <kbd>Ctrl</kbd> <kbd>+</kbd> pour étendre la sélection aux éléments liés", en:"📍 Select one cylinder segment → <kbd>Ctrl</kbd> <kbd>+</kbd> to grow selection to linked elements"},
+      },
+      {
+        main:{fr:"Créer un matériau marron pour le tronc et l'assigner", en:"Create a brown material for the trunk and assign it"},
+        ok:{fr:"✅ Un sapin complet avec feuillage vert et tronc marron", en:"✅ One complete tree with green foliage and brown trunk"},
+      },
+    ]
+  },
+  {
+    title: {fr:"5. Propager les couleurs à tous les sapins", en:"5. Propagate colors to all the trees"},
+    items: [
+      {
+        main:{fr:"Raffiche tout, sélectionner tous les sapins puis en dernier le sapin coloré", en:"Unhide everything, select all trees then the colored one last"},
+        loc:{fr:"📍 <kbd>Alt+H</kbd> → Shift+clic sur chaque sapin, le dernier sélectionné a le contour jaune clair", en:"📍 <kbd>Alt+H</kbd> → Shift+click each tree, the last one selected has the light-yellow outline"},
+        why:{fr:"💡 Dans Blender, l'objet actif (dernier sélectionné) sert toujours de référence pour Ctrl+L", en:"💡 In Blender, the active object (last selected) is always the reference for Ctrl+L"},
+      },
+      {
+        main:{fr:"Utiliser Ctrl+L → Link Materials (pas Object Data !)", en:"Use Ctrl+L → Link Materials (not Object Data!)"},
+        loc:{fr:"📍 <kbd>Ctrl+L</kbd> → choisir « Link Materials »", en:"📍 <kbd>Ctrl+L</kbd> → choose « Link Materials »"},
+        warn:{fr:"⚠️ « Link Object Data » transforme les objets en copies liées du même maillage : modifier l'un modifie tous les autres (sauf la transformation Object Mode). N'utiliser que « Link Materials » pour juste copier la couleur", en:"⚠️ « Link Object Data » turns objects into linked copies of the same mesh: editing one edits all of them (except Object Mode transforms). Only use « Link Materials » to copy just the color"},
+        ok:{fr:"✅ Tous les sapins ont les mêmes couleurs, mais restent des objets indépendants", en:"✅ All trees share the same colors but stay independent objects"},
+      },
+    ]
+  },
+  {
+    title: {fr:"6. Cailloux et cendres", en:"6. Rocks and ashes"},
+    items: [
+      {
+        main:{fr:"Créer un matériau gris-terreux pour un caillou puis le propager (Ctrl+L → Link Materials)", en:"Create a grey-earthy material for one rock, then propagate it (Ctrl+L → Link Materials)"},
+      },
+      {
+        main:{fr:"Créer un matériau noir pour le plan des cendres sous le feu", en:"Create a black material for the ash plane under the fire"},
+        ok:{fr:"✅ La scène entière a maintenant des couleurs cohérentes", en:"✅ The whole scene now has consistent colors"},
+      },
+    ]
+  },
+  {
+    title: {fr:"7. Placer la caméra", en:"7. Set up the camera"},
+    items: [
+      {
+        main:{fr:"Ajouter une caméra sur le curseur 3D", en:"Add a camera at the 3D cursor"},
+        loc:{fr:"📍 <kbd>Shift+A</kbd> → Camera", en:"📍 <kbd>Shift+A</kbd> → Camera"},
+      },
+      {
+        main:{fr:"Aligner la caméra sur la vue actuelle du viewport", en:"Align the camera to the current viewport view"},
+        loc:{fr:"📍 Se positionner dans le viewport puis <kbd>Ctrl+Alt+Num0</kbd>", en:"📍 Frame the shot in the viewport then <kbd>Ctrl+Alt+Num0</kbd>"},
+        why:{fr:"💡 Bien plus rapide que de déplacer la caméra à la main avec G/R", en:"💡 Much faster than moving the camera by hand with G/R"},
+      },
+      {
+        main:{fr:"Ajuster le cadrage pour englober toute la scène", en:"Adjust the framing to include the whole scene"},
+        loc:{fr:"📍 Vue caméra : <kbd>Num0</kbd>", en:"📍 Camera view: <kbd>Num0</kbd>"},
+      },
+    ]
+  },
+  {
+    title: {fr:"8. Ajouter des lumières", en:"8. Add lighting"},
+    items: [
+      {
+        main:{fr:"Ajouter une lumière Sun (soleil) et la positionner", en:"Add a Sun light and position it"},
+        loc:{fr:"📍 <kbd>Shift+A</kbd> → Light → Sun → <kbd>G</kbd> pour déplacer", en:"📍 <kbd>Shift+A</kbd> → Light → Sun → <kbd>G</kbd> to move"},
+        why:{fr:"💡 4 types de lumière : Point (ampoule), Sun (soleil, lumière directionnelle), Spot, Area (diffuse, type softbox)", en:"💡 4 light types: Point (bulb), Sun (directional light), Spot, Area (diffuse, softbox-like)"},
+      },
+      {
+        main:{fr:"Régler l'angle du soleil en faisant glisser la petite boule jaune", en:"Adjust the sun's angle by dragging the small yellow sphere"},
+        loc:{fr:"📍 Cliquer-glisser la boule jaune de la lumière sélectionnée", en:"📍 Click-drag the yellow sphere on the selected light"},
+        why:{fr:"💡 L'angle change l'ambiance : lumière haute = midi, lumière rasante = fin de journée", en:"💡 The angle changes the mood: high light = midday, low/grazing light = late day"},
+      },
+      {
+        main:{fr:"Dupliquer le soleil, baisser sa force (~0.5) et changer son angle", en:"Duplicate the sun, lower its strength (~0.5) and change its angle"},
+        loc:{fr:"📍 <kbd>Shift+D</kbd> → régler Strength à 0.5 dans les propriétés de la lumière", en:"📍 <kbd>Shift+D</kbd> → set Strength to 0.5 in the light properties"},
+        why:{fr:"💡 Éclairage à deux points : une lumière principale + une lumière d'appoint pour adoucir les ombres", en:"💡 Two-point lighting: one key light + one fill light to soften shadows"},
+        ok:{fr:"✅ Les ombres trop marquées sont adoucies", en:"✅ Overly harsh shadows are softened"},
+      },
+    ]
+  },
+  {
+    title: {fr:"9. Faire le rendu", en:"9. Render the scene"},
+    items: [
+      {
+        main:{fr:"Basculer sur l'onglet Render pour vérifier le rendu (pas juste Material Preview)", en:"Switch to the Render tab to check the actual render (not just Material Preview)"},
+        warn:{fr:"⚠️ Le mode Material Preview n'utilise pas les vraies lumières de la scène, le rendu peut sembler bien plus sombre", en:"⚠️ Material Preview mode doesn't use the scene's real lights, the render can look much darker"},
+      },
+      {
+        main:{fr:"Lancer le rendu final", en:"Launch the final render"},
+        loc:{fr:"📍 Render → Render Image, ou <kbd>F12</kbd>", en:"📍 Render → Render Image, or <kbd>F12</kbd>"},
+      },
+    ]
+  },
+  {
+    title: {fr:"10. Bonus : détails et export", en:"10. Bonus: details and export"},
+    items: [
+      {
+        main:{fr:"Sélectionner le contour de la rivière (Alt+clic sur une arête) et ajouter du sable/pierre", en:"Select the river's edge loop (Alt+click an edge) and add sand/stone"},
+        loc:{fr:"📍 <kbd>Alt</kbd>+clic sur une arête → nouveau matériau clair", en:"📍 <kbd>Alt</kbd>+click an edge → new light-colored material"},
+      },
+      {
+        main:{fr:"Ajouter quelques cailloux supplémentaires pour dynamiser la scène", en:"Add a few extra rocks to liven up the scene"},
+      },
+      {
+        main:{fr:"Adapter le format de la caméra si besoin (16:9 = 1920×1080, carré = 1200×1200)", en:"Adjust the camera's aspect ratio if needed (16:9 = 1920×1080, square = 1200×1200)"},
+        loc:{fr:"📍 Output Properties (icône imprimante) → Resolution", en:"📍 Output Properties (printer icon) → Resolution"},
+      },
+      {
+        main:{fr:"Activer le fond transparent pour un export PNG transparent", en:"Enable transparent background for a transparent PNG export"},
+        loc:{fr:"📍 Output Properties → Film → cocher Transparent", en:"📍 Output Properties → Film → check Transparent"},
+        ok:{fr:"✅ Scène finale colorée, éclairée et rendue", en:"✅ Final scene colored, lit and rendered"},
+      },
+    ]
+  },
+];
+
+let lang = 'fr';
+const STORAGE_KEY = 'checklist_lowpoly_scene_partie2_progress';
+
+function loadProgress(){
+  try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }catch(e){ return {}; }
+}
+function saveProgress(p){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(p));
+}
+
+function render(){
+  const container = document.getElementById('blocks');
+  container.innerHTML = '';
+  const progress = loadProgress();
+  let total = 0, done = 0;
+
+  DATA.forEach((block, bi) => {
+    const section = document.createElement('section');
+    section.className = 'block';
+
+    const head = document.createElement('div');
+    head.className = 'block-head';
+    head.innerHTML = `<div class="block-num">${bi+1}</div><h2>${block.title[lang]}</h2>`;
+    section.appendChild(head);
+
+    const body = document.createElement('div');
+    body.className = 'block-body';
+
+    block.items.forEach((it, ii) => {
+      total++;
+      const key = `${bi}-${ii}`;
+      const isDone = !!progress[key];
+      if(isDone) done++;
+
+      const item = document.createElement('div');
+      item.className = 'item' + (isDone ? ' done' : '');
+      item.onclick = () => {
+        const p = loadProgress();
+        p[key] = !p[key];
+        saveProgress(p);
+        render();
+      };
+
+      let metaHtml = '<div class="meta">';
+      if(it.loc) metaHtml += `<span class="loc">${it.loc[lang]}</span>`;
+      if(it.why) metaHtml += `<span class="why">${it.why[lang]}</span>`;
+      if(it.warn) metaHtml += `<span class="warn">${it.warn[lang]}</span>`;
+      if(it.ok) metaHtml += `<span class="ok">${it.ok[lang]}</span>`;
+      metaHtml += '</div>';
+
+      item.innerHTML = `
+        <div class="checkbox">${isDone ? '✓' : ''}</div>
+        <div class="item-text">
+          <div class="main">${it.main[lang]}</div>
+          ${metaHtml}
+        </div>
+      `;
+      body.appendChild(item);
+    });
+
+    section.appendChild(body);
+    container.appendChild(section);
+  });
+
+  document.getElementById('progressFill').style.width = total ? (done/total*100)+'%' : '0%';
+  document.getElementById('progressLabel').textContent = `${done} / ${total}`;
+
+  document.querySelectorAll('[data-fr]').forEach(el=>{
+    el.textContent = el.getAttribute('data-'+lang);
+  });
+}
+
+function setLang(l){
+  lang = l;
+  document.getElementById('btn-fr').classList.toggle('active', l==='fr');
+  document.getElementById('btn-en').classList.toggle('active', l==='en');
+  render();
+}
+
+function resetAll(){
+  localStorage.removeItem(STORAGE_KEY);
+  render();
+}
+
+render();
+</script>
+</body>
+</html>

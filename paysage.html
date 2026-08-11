@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checklist — Scène Low Poly</title>
+<style>
+  :root{
+    --violet:#6C4AB6;
+    --violet-dark:#4B2E83;
+    --teal:#2FB6A6;
+    --gold:#E3B23C;
+    --bg:#F7F5FB;
+    --card:#FFFFFF;
+    --ink:#2B2440;
+    --ink-soft:#665F7A;
+    --line:#E4DEF2;
+    --done:#EFFBF8;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    background:linear-gradient(160deg,var(--bg) 0%, #EFE9FB 100%);
+    color:var(--ink);
+    padding:24px 16px 60px;
+  }
+  .wrap{max-width:760px;margin:0 auto;}
+  header{
+    background:linear-gradient(120deg,var(--violet-dark),var(--violet));
+    border-radius:18px;
+    padding:28px 26px;
+    color:#fff;
+    position:relative;
+    overflow:hidden;
+    margin-bottom:20px;
+  }
+  header::after{
+    content:"";
+    position:absolute;
+    right:-40px;top:-40px;
+    width:160px;height:160px;
+    background:radial-gradient(circle,var(--gold) 0%, transparent 70%);
+    opacity:0.5;
+  }
+  header h1{margin:0 0 6px;font-size:1.5rem;letter-spacing:.3px;}
+  header p{margin:0;opacity:.9;font-size:.92rem;}
+  .toolbar{
+    display:flex;justify-content:space-between;align-items:center;
+    gap:12px;flex-wrap:wrap;margin:16px 0 20px;
+  }
+  .lang-toggle{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:4px;
+    display:flex;gap:4px;
+  }
+  .lang-toggle button{
+    border:none;background:transparent;
+    padding:7px 16px;border-radius:999px;
+    font-weight:600;font-size:.85rem;
+    cursor:pointer;color:var(--ink-soft);
+    transition:.2s;
+  }
+  .lang-toggle button.active{background:var(--violet);color:#fff;}
+  .progress-wrap{flex:1;min-width:180px;}
+  .progress-bar{
+    background:var(--line);border-radius:999px;height:10px;overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;background:linear-gradient(90deg,var(--teal),var(--gold));
+    width:0%;transition:width .3s ease;
+  }
+  .progress-label{font-size:.78rem;color:var(--ink-soft);margin-top:4px;}
+  .reset-btn{
+    border:1px solid var(--line);background:var(--card);
+    color:var(--ink-soft);border-radius:10px;padding:8px 14px;
+    font-size:.8rem;cursor:pointer;
+  }
+  section.block{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:16px;
+    margin-bottom:16px;
+    overflow:hidden;
+  }
+  .block-head{
+    display:flex;align-items:center;gap:12px;
+    padding:16px 18px;
+    background:linear-gradient(90deg,rgba(108,74,182,.06),transparent);
+    border-bottom:1px solid var(--line);
+  }
+  .block-num{
+    width:30px;height:30px;border-radius:50%;
+    background:var(--violet);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:.85rem;flex-shrink:0;
+  }
+  .block-head h2{margin:0;font-size:1.05rem;color:var(--violet-dark);}
+  .block-body{padding:6px 12px 12px;}
+  .item{
+    display:flex;gap:12px;
+    padding:10px 10px;
+    border-radius:10px;
+    margin:4px 0;
+    cursor:pointer;
+    transition:.15s;
+  }
+  .item:hover{background:#F9F7FD;}
+  .item.done{background:var(--done);}
+  .item.done .item-text .main{text-decoration:line-through;color:var(--ink-soft);}
+  .checkbox{
+    width:20px;height:20px;flex-shrink:0;margin-top:2px;
+    border-radius:6px;border:2px solid var(--violet);
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-size:12px;font-weight:700;
+    background:#fff;
+  }
+  .item.done .checkbox{background:var(--teal);border-color:var(--teal);}
+  .item-text .main{font-size:.94rem;font-weight:600;color:var(--ink);}
+  .meta{margin-top:5px;display:flex;flex-direction:column;gap:2px;}
+  .meta span{font-size:.8rem;line-height:1.35;color:var(--ink-soft);}
+  .meta .loc{color:var(--violet-dark);}
+  .meta .why{color:#4C7C74;}
+  .meta .warn{color:#A6702B;}
+  .meta .ok{color:#2E8B78;font-weight:600;}
+  kbd{
+    background:#efeaf9;border:1px solid var(--line);
+    border-radius:5px;padding:1px 6px;font-size:.78rem;
+    font-family:Consolas,monospace;color:var(--violet-dark);
+  }
+  footer{text-align:center;color:var(--ink-soft);font-size:.78rem;margin-top:24px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1 data-fr="Checklist — Scène Low Poly (sapin, feu de camp, rivière)" data-en="Checklist — Low Poly Scene (tree, campfire, river)">Checklist — Scène Low Poly</h1>
+    <p data-fr="Blender • Modélisation débutant • basé sur le tuto de Brago" data-en="Blender • Beginner modeling • based on Brago's tutorial">Blender • Modélisation débutant</p>
+  </header>
+
+  <div class="toolbar">
+    <div class="lang-toggle">
+      <button id="btn-fr" class="active" onclick="setLang('fr')">FR</button>
+      <button id="btn-en" onclick="setLang('en')">EN</button>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-label" id="progressLabel">0 / 0</div>
+    </div>
+    <button class="reset-btn" onclick="resetAll()" data-fr="↺ Réinitialiser" data-en="↺ Reset">↺ Réinitialiser</button>
+  </div>
+
+  <div id="blocks"></div>
+
+  <footer data-fr="Progression sauvegardée automatiquement dans ce navigateur." data-en="Progress is saved automatically in this browser.">
+    Progression sauvegardée automatiquement dans ce navigateur.
+  </footer>
+</div>
+
+<script>
+const DATA = [
+  {
+    title: {fr:"1. Préparer la scène", en:"1. Set up the scene"},
+    items: [
+      {
+        main:{fr:"Supprimer la caméra et la lumière par défaut", en:"Delete the default camera and light"},
+        loc:{fr:"📍 Sélectionner puis touche Suppr / X", en:"📍 Select, then Del / X key"},
+        why:{fr:"💡 On repart d'une scène vide pour construire le décor", en:"💡 Start from an empty scene to build the set"},
+      },
+      {
+        main:{fr:"Ajouter un cube et l'aplatir pour créer le sol", en:"Add a cube and flatten it to create the ground"},
+        loc:{fr:"📍 Edit Mode (Tab) → <kbd>S</kbd> <kbd>Z</kbd> pour réduire sur l'axe Z", en:"📍 Edit Mode (Tab) → <kbd>S</kbd> <kbd>Z</kbd> to scale on Z axis"},
+        ok:{fr:"✅ Le cube devient une plaque plate", en:"✅ The cube becomes a flat slab"},
+      },
+    ]
+  },
+  {
+    title: {fr:"2. Sculpter le sol", en:"2. Sculpt the ground"},
+    items: [
+      {
+        main:{fr:"Dupliquer le bord et l'écarter pour agrandir le terrain", en:"Duplicate the edge and pull it out to enlarge the terrain"},
+        loc:{fr:"📍 <kbd>Shift+D</kbd> puis <kbd>Z</kbd>, puis <kbd>S</kbd> <kbd>Shift+Z</kbd>", en:"📍 <kbd>Shift+D</kbd> then <kbd>Z</kbd>, then <kbd>S</kbd> <kbd>Shift+Z</kbd>"},
+        why:{fr:"💡 Shift+D est plus rapide que Ctrl+C / Ctrl+V", en:"💡 Shift+D is faster than Ctrl+C / Ctrl+V"},
+      },
+      {
+        main:{fr:"Sélectionner la face du dessus et la subdiviser", en:"Select the top face and subdivide it"},
+        loc:{fr:"📍 <kbd>3</kbd> pour face select → clic droit → Subdivide (≈4 coupes)", en:"📍 <kbd>3</kbd> for face select → right-click → Subdivide (≈4 cuts)"},
+        warn:{fr:"⚠️ Pas besoin d'être pixel-précis, la 3D low poly tolère l'approximatif", en:"⚠️ No need for pixel precision, low poly tolerates approximation"},
+      },
+      {
+        main:{fr:"Déplacer les sommets pour créer du relief", en:"Move vertices to create relief"},
+        loc:{fr:"📍 <kbd>1</kbd> pour vertex select → <kbd>G</kbd> pour déplacer", en:"📍 <kbd>1</kbd> for vertex select → <kbd>G</kbd> to move"},
+        ok:{fr:"✅ Le sol n'est plus plat, il a des bosses", en:"✅ Ground is no longer flat, it has bumps"},
+      },
+    ]
+  },
+  {
+    title: {fr:"3. Modéliser le sapin", en:"3. Model the tree"},
+    items: [
+      {
+        main:{fr:"Cacher le sol (sélection + H), ajouter un cylindre pour le tronc", en:"Hide the ground (select + H), add a cylinder for the trunk"},
+        loc:{fr:"📍 <kbd>Shift+A</kbd> → Mesh → Cylinder, réduire le nb de sommets", en:"📍 <kbd>Shift+A</kbd> → Mesh → Cylinder, reduce vertex count"},
+        why:{fr:"💡 Alt+H raffiche tout, Shift+H isole la sélection", en:"💡 Alt+H unhides everything, Shift+H isolates selection"},
+      },
+      {
+        main:{fr:"Réduire le cylindre pour en faire un tronc fin", en:"Scale the cylinder down into a thin trunk"},
+        loc:{fr:"📍 <kbd>S</kbd> en Object Mode", en:"📍 <kbd>S</kbd> in Object Mode"},
+      },
+      {
+        main:{fr:"Extruder 3 étages de branchage (E puis clic gauche sur place, puis S)", en:"Extrude 3 tiers of branches (E then left-click in place, then S)"},
+        loc:{fr:"📍 Sélectionner la face du dessus → <kbd>E</kbd> (clic gauche sans bouger) → <kbd>S</kbd> → <kbd>E</kbd> vers le haut → <kbd>S</kbd>, x3", en:"📍 Select top face → <kbd>E</kbd> (left-click without moving) → <kbd>S</kbd> → <kbd>E</kbd> upward → <kbd>S</kbd>, x3"},
+        why:{fr:"💡 L'extrude sur place puis scale crée un étage plat avant de remonter", en:"💡 Extruding in place then scaling creates a flat tier before rising"},
+      },
+      {
+        main:{fr:"Casser la symétrie des branches et élargir la base du tronc", en:"Break the branch symmetry and widen the trunk base"},
+        loc:{fr:"📍 Vue du dessus (Z num.) → sélection sommets → <kbd>S</kbd> <kbd>Shift+Z</kbd>", en:"📍 Top view (num Z) → select vertices → <kbd>S</kbd> <kbd>Shift+Z</kbd>"},
+        ok:{fr:"✅ Le sapin paraît moins géométrique, plus naturel", en:"✅ The tree looks less geometric, more natural"},
+      },
+    ]
+  },
+  {
+    title: {fr:"4. Intégrer les sapins dans la scène", en:"4. Place the trees in the scene"},
+    items: [
+      {
+        main:{fr:"Raffiche tout, redimensionner et positionner le premier sapin", en:"Unhide everything, resize and position the first tree"},
+        loc:{fr:"📍 <kbd>Alt+H</kbd> → <kbd>S</kbd> pour la taille → <kbd>G</kbd> pour placer", en:"📍 <kbd>Alt+H</kbd> → <kbd>S</kbd> to resize → <kbd>G</kbd> to place"},
+      },
+      {
+        main:{fr:"Enfoncer légèrement le tronc dans le sol", en:"Sink the trunk slightly into the ground"},
+        warn:{fr:"⚠️ Un espace visible sous le tronc casse l'effet naturel", en:"⚠️ A visible gap under the trunk breaks the natural look"},
+      },
+      {
+        main:{fr:"Dupliquer pour créer une petite forêt, varier position/rotation/échelle", en:"Duplicate to create a small forest, vary position/rotation/scale"},
+        loc:{fr:"📍 <kbd>Shift+D</kbd> puis <kbd>G</kbd> X/Y, <kbd>R</kbd> (x2 pour rotation libre), <kbd>S</kbd>", en:"📍 <kbd>Shift+D</kbd> then <kbd>G</kbd> X/Y, <kbd>R</kbd> (x2 for free rotation), <kbd>S</kbd>"},
+        ok:{fr:"✅ Les sapins ne sont plus identiques entre eux", en:"✅ Trees no longer look identical to each other"},
+      },
+    ]
+  },
+  {
+    title: {fr:"5. Cailloux et cercle du feu de camp", en:"5. Rocks and campfire ring"},
+    items: [
+      {
+        main:{fr:"Placer le curseur 3D à l'emplacement du feu", en:"Place the 3D cursor at the campfire location"},
+        loc:{fr:"📍 <kbd>Shift</kbd> + clic droit sur le sol", en:"📍 <kbd>Shift</kbd> + right-click on the ground"},
+        why:{fr:"💡 Les nouveaux objets apparaissent sur le curseur 3D, pas au centre de la scène", en:"💡 New objects spawn on the 3D cursor, not at the scene origin"},
+      },
+      {
+        main:{fr:"Ajouter une icosphère et la modeler en caillou", en:"Add an icosphere and shape it into a rock"},
+        loc:{fr:"📍 <kbd>Shift+A</kbd> → Mesh → Ico Sphere (subdivisions 2) → déformer les faces", en:"📍 <kbd>Shift+A</kbd> → Mesh → Ico Sphere (2 subdivisions) → deform faces"},
+        warn:{fr:"⚠️ Un caillou n'a pas de forme fixe, on peut vraiment abuser de la déformation", en:"⚠️ A rock has no fixed shape, feel free to deform it heavily"},
+      },
+      {
+        main:{fr:"Dupliquer les cailloux en cercle autour du feu", en:"Duplicate the rocks in a ring around the fire"},
+        loc:{fr:"📍 <kbd>Shift+D</kbd> + <kbd>Shift+Z</kbd> pour rester sur le même plan", en:"📍 <kbd>Shift+D</kbd> + <kbd>Shift+Z</kbd> to stay on the same plane"},
+      },
+      {
+        main:{fr:"Randomiser rotation/échelle des cailloux pour casser la symétrie", en:"Randomize rock rotation/scale to break symmetry"},
+        loc:{fr:"📍 Object → Transform → Randomize Transform (rotation ≈180°, léger scale)", en:"📍 Object → Transform → Randomize Transform (rotation ≈180°, slight scale)"},
+        ok:{fr:"✅ Le cercle de pierres n'a plus l'air parfaitement symétrique", en:"✅ The stone ring no longer looks perfectly symmetrical"},
+      },
+    ]
+  },
+  {
+    title: {fr:"6. Bâtons et cendres du feu", en:"6. Fire sticks and ashes"},
+    items: [
+      {
+        main:{fr:"Créer un bâton à partir d'un cube réduit et orienté", en:"Create a stick from a scaled-down, angled cube"},
+        loc:{fr:"📍 Cube → <kbd>S</kbd> réduire → <kbd>R</kbd> orienter → <kbd>E</kbd> extruder en longueur", en:"📍 Cube → <kbd>S</kbd> scale down → <kbd>R</kbd> rotate → <kbd>E</kbd> extrude lengthwise"},
+      },
+      {
+        main:{fr:"Loop cut et casser la tête du bâton", en:"Loop cut and break the tip of the stick"},
+        loc:{fr:"📍 <kbd>Ctrl+R</kbd> puis <kbd>Alt</kbd>+clic pour sélectionner la boucle d'arêtes", en:"📍 <kbd>Ctrl+R</kbd> then <kbd>Alt</kbd>+click to select the edge loop"},
+      },
+      {
+        main:{fr:"Dupliquer et orienter plusieurs bâtons façon feu de camp", en:"Duplicate and angle several sticks like a campfire"},
+      },
+      {
+        main:{fr:"Ajouter un plan réduit sous le feu pour les cendres", en:"Add a small flattened plane under the fire for ashes"},
+        loc:{fr:"📍 Plan → réduire → <kbd>G</kbd> légèrement au-dessus du sol", en:"📍 Plane → scale down → <kbd>G</kbd> slightly above the ground"},
+      },
+    ]
+  },
+  {
+    title: {fr:"7. Creuser la rivière", en:"7. Carve the river"},
+    items: [
+      {
+        main:{fr:"Sélectionner une rangée de faces du sol", en:"Select a row of ground faces"},
+        loc:{fr:"📍 <kbd>3</kbd> pour face select, sélectionner la rangée voulue", en:"📍 <kbd>3</kbd> for face select, pick the desired row"},
+      },
+      {
+        main:{fr:"Extruder vers l'intérieur pour creuser le lit de la rivière", en:"Extrude inward to carve the riverbed"},
+        loc:{fr:"📍 <kbd>E</kbd> puis <kbd>S</kbd> <kbd>X</kbd> pour créer un rebord", en:"📍 <kbd>E</kbd> then <kbd>S</kbd> <kbd>X</kbd> to create a bank"},
+        ok:{fr:"✅ La scène complète : forêt, feu de camp, rivière", en:"✅ The complete scene: forest, campfire, river"},
+      },
+    ]
+  },
+];
+
+let lang = 'fr';
+const STORAGE_KEY = 'checklist_lowpoly_scene_progress';
+
+function loadProgress(){
+  try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }catch(e){ return {}; }
+}
+function saveProgress(p){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(p));
+}
+
+function render(){
+  const container = document.getElementById('blocks');
+  container.innerHTML = '';
+  const progress = loadProgress();
+  let total = 0, done = 0;
+
+  DATA.forEach((block, bi) => {
+    const section = document.createElement('section');
+    section.className = 'block';
+
+    const head = document.createElement('div');
+    head.className = 'block-head';
+    head.innerHTML = `<div class="block-num">${bi+1}</div><h2>${block.title[lang]}</h2>`;
+    section.appendChild(head);
+
+    const body = document.createElement('div');
+    body.className = 'block-body';
+
+    block.items.forEach((it, ii) => {
+      total++;
+      const key = `${bi}-${ii}`;
+      const isDone = !!progress[key];
+      if(isDone) done++;
+
+      const item = document.createElement('div');
+      item.className = 'item' + (isDone ? ' done' : '');
+      item.onclick = () => {
+        const p = loadProgress();
+        p[key] = !p[key];
+        saveProgress(p);
+        render();
+      };
+
+      let metaHtml = '<div class="meta">';
+      if(it.loc) metaHtml += `<span class="loc">${it.loc[lang]}</span>`;
+      if(it.why) metaHtml += `<span class="why">${it.why[lang]}</span>`;
+      if(it.warn) metaHtml += `<span class="warn">${it.warn[lang]}</span>`;
+      if(it.ok) metaHtml += `<span class="ok">${it.ok[lang]}</span>`;
+      metaHtml += '</div>';
+
+      item.innerHTML = `
+        <div class="checkbox">${isDone ? '✓' : ''}</div>
+        <div class="item-text">
+          <div class="main">${it.main[lang]}</div>
+          ${metaHtml}
+        </div>
+      `;
+      body.appendChild(item);
+    });
+
+    section.appendChild(body);
+    container.appendChild(section);
+  });
+
+  document.getElementById('progressFill').style.width = total ? (done/total*100)+'%' : '0%';
+  document.getElementById('progressLabel').textContent = `${done} / ${total}`;
+
+  document.querySelectorAll('[data-fr]').forEach(el=>{
+    el.textContent = el.getAttribute('data-'+lang);
+  });
+}
+
+function setLang(l){
+  lang = l;
+  document.getElementById('btn-fr').classList.toggle('active', l==='fr');
+  document.getElementById('btn-en').classList.toggle('active', l==='en');
+  render();
+}
+
+function resetAll(){
+  localStorage.removeItem(STORAGE_KEY);
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
