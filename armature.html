@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checklist — Ajouter une armature à un personnage | Blender</title>
+<style>
+  :root{
+    --violet:#5B3A8E;
+    --violet-dark:#2E1A47;
+    --violet-text:#2B2140;
+    --teal:#0E8388;
+    --teal-light:#DFF3F1;
+    --gold:#E8B84B;
+    --gold-dark:#B9860F;
+    --bg:#FAF9FC;
+    --gray:#6B6478;
+    --gray-light:#F0EDF5;
+    --white:#FFFFFF;
+    --red:#D64545;
+    --red-light:#FBE4E4;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Segoe UI', Calibri, Arial, sans-serif;
+    background:var(--bg);
+    color:var(--violet-text);
+    padding-bottom:60px;
+  }
+  header{
+    background:var(--violet-dark);
+    color:var(--white);
+    padding:28px 24px 22px;
+    position:sticky;
+    top:0;
+    z-index:20;
+    box-shadow:0 4px 14px rgba(46,26,71,0.25);
+  }
+  .header-inner{
+    max-width:880px;
+    margin:0 auto;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  h1{
+    margin:0 0 6px;
+    font-size:1.6rem;
+    font-weight:700;
+  }
+  .subtitle{
+    margin:0;
+    color:var(--gold);
+    font-style:italic;
+    font-size:0.98rem;
+  }
+  .lang-toggle{
+    background:var(--gold);
+    color:var(--violet-dark);
+    border:none;
+    border-radius:8px;
+    padding:9px 16px;
+    font-weight:700;
+    font-size:0.9rem;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .lang-toggle:hover{ background:#f0c766; }
+
+  .progress-wrap{
+    max-width:880px;
+    margin:16px auto 0;
+  }
+  .progress-bar{
+    height:12px;
+    background:rgba(255,255,255,0.15);
+    border-radius:6px;
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    background:linear-gradient(90deg, var(--teal), var(--gold));
+    width:0%;
+    transition:width .3s ease;
+  }
+  .progress-text{
+    font-size:0.85rem;
+    color:#CFC7DE;
+    margin-top:6px;
+  }
+
+  main{
+    max-width:880px;
+    margin:28px auto;
+    padding:0 20px;
+  }
+
+  .section{
+    margin-bottom:26px;
+  }
+  .section-title{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    color:var(--violet);
+    font-size:1.15rem;
+    font-weight:700;
+    margin-bottom:12px;
+  }
+  .section-num{
+    background:var(--violet);
+    color:var(--white);
+    width:28px;
+    height:28px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:0.9rem;
+    flex-shrink:0;
+  }
+
+  .step{
+    background:var(--white);
+    border-radius:12px;
+    padding:16px 18px;
+    margin-bottom:12px;
+    box-shadow:0 2px 8px rgba(46,26,71,0.08);
+    border-left:4px solid var(--gray-light);
+    transition:border-color .2s ease, opacity .2s ease;
+  }
+  .step.done{
+    border-left-color:var(--teal);
+    opacity:0.75;
+  }
+  .step-head{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    cursor:pointer;
+  }
+  .step-head input[type="checkbox"]{
+    width:20px;
+    height:20px;
+    margin-top:2px;
+    accent-color:var(--teal);
+    cursor:pointer;
+    flex-shrink:0;
+  }
+  .step-title{
+    font-weight:700;
+    font-size:1rem;
+    color:var(--violet-text);
+  }
+  .step.done .step-title{
+    text-decoration:line-through;
+    color:var(--gray);
+  }
+  .step-body{
+    margin-top:10px;
+    padding-left:32px;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+  .note{
+    font-size:0.9rem;
+    line-height:1.45;
+    display:flex;
+    gap:8px;
+  }
+  .note .tag{ flex-shrink:0; }
+  .note.loc{ color:var(--violet); }
+  .note.why{ color:var(--teal); }
+  .note.warn{ color:var(--red); }
+  .note.ok{ color:#1E8E5A; }
+
+  .reset-bar{
+    max-width:880px;
+    margin:10px auto 0;
+    padding:0 20px;
+    display:flex;
+    justify-content:flex-end;
+  }
+  .reset-btn{
+    background:none;
+    border:1.5px solid var(--gray);
+    color:var(--gray);
+    border-radius:8px;
+    padding:7px 14px;
+    font-size:0.85rem;
+    cursor:pointer;
+  }
+  .reset-btn:hover{ border-color:var(--red); color:var(--red); }
+
+  footer{
+    text-align:center;
+    color:var(--gray);
+    font-size:0.85rem;
+    margin-top:30px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div>
+      <h1 data-fr="Ajouter une armature à un personnage" data-en="Adding an armature to a character">Ajouter une armature à un personnage</h1>
+      <p class="subtitle" data-fr="Blender — rigging et animation de base" data-en="Blender — rigging and basic animation">Blender — rigging et animation de base</p>
+    </div>
+    <button class="lang-toggle" id="langBtn" onclick="toggleLang()">EN</button>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-text" id="progressText">0 / 0</div>
+  </div>
+</header>
+
+<div class="reset-bar">
+  <button class="reset-btn" onclick="resetChecklist()" data-fr="↺ Réinitialiser" data-en="↺ Reset">↺ Réinitialiser</button>
+</div>
+
+<main id="main"></main>
+
+<footer data-fr="Ta progression est sauvegardée automatiquement sur cet ordinateur." data-en="Your progress is saved automatically on this computer.">
+  Ta progression est sauvegardée automatiquement sur cet ordinateur.
+</footer>
+
+<script>
+const DATA = [
+  {
+    section: { fr: "Préparer le personnage", en: "Prepare the character" },
+    steps: [
+      {
+        id: "s1",
+        title: { fr: "Vérifier et appliquer les transformations du maillage", en: "Check and apply the mesh transforms" },
+        loc: { fr: "Mode Objet — sélectionner le personnage — Objet > Appliquer > Toutes les transformations (Ctrl+A)", en: "Object Mode — select the character — Object > Apply > All Transforms (Ctrl+A)" },
+        why: { fr: "Une échelle ou rotation non appliquée déforme le rig plus tard.", en: "An un-applied scale or rotation will distort the rig later." },
+        warn: { fr: "Si l'échelle affichée dans le panneau N n'est pas 1,1,1 → applique-la avant de continuer.", en: "If the scale shown in the N panel isn't 1,1,1 → apply it before continuing." },
+        ok: { fr: "Position/Rotation/Échelle sont à 0,0,0 / 0,0,0 / 1,1,1 dans le panneau N.", en: "Location/Rotation/Scale read 0,0,0 / 0,0,0 / 1,1,1 in the N panel." },
+      },
+      {
+        id: "s2",
+        title: { fr: "Placer l'origine du personnage au sol, entre les pieds", en: "Place the character's origin on the ground, between the feet" },
+        loc: { fr: "Mode Objet — Objet > Définir l'origine > Origine au centre de masse (ou déplacement manuel du 3D Cursor)", en: "Object Mode — Object > Set Origin > Origin to Center of Mass (or manual 3D Cursor placement)" },
+        why: { fr: "L'armature démarre depuis cette origine : elle doit être au bon endroit pour un rig propre.", en: "The armature starts from this origin: it needs to be in the right spot for a clean rig." },
+        warn: { fr: "Une origine flottante en l'air complique le placement des os racine.", en: "An origin floating in mid-air complicates placing the root bones." },
+        ok: { fr: "Le point orange (origine) est visible entre les pieds du personnage.", en: "The orange dot (origin) is visible between the character's feet." },
+      },
+    ],
+  },
+  {
+    section: { fr: "Créer l'armature", en: "Create the armature" },
+    steps: [
+      {
+        id: "s3",
+        title: { fr: "Ajouter une armature à la base du personnage", en: "Add an armature at the base of the character" },
+        loc: { fr: "3D Cursor au sol — Maj+A > Armature > Os simple (Single Bone)", en: "3D Cursor on the ground — Shift+A > Armature > Single Bone" },
+        why: { fr: "Ce premier os sera le point de départ de toute la hiérarchie du squelette.", en: "This first bone will be the starting point of the whole bone hierarchy." },
+        warn: { fr: "Si le 3D Cursor n'est pas au bon endroit, l'os apparaît ailleurs (Maj+C ou Maj+S pour le recentrer avant).", en: "If the 3D Cursor isn't in the right spot, the bone appears elsewhere (Shift+C or Shift+S to recenter it first)." },
+        ok: { fr: "Un os unique apparaît à la base du personnage, bien orienté vers le haut.", en: "A single bone appears at the base of the character, oriented upward." },
+      },
+      {
+        id: "s4",
+        title: { fr: "Activer l'affichage 'En transparence' et 'Nom des os'", en: "Enable 'In Front' display and 'Bone Names'" },
+        loc: { fr: "Propriétés de l'objet armature (icône bonhomme) > Viewport Display > En transparence + Noms", en: "Armature object properties (stick-figure icon) > Viewport Display > In Front + Names" },
+        why: { fr: "Voir les os à travers le maillage rend le placement beaucoup plus précis.", en: "Seeing the bones through the mesh makes placement far more accurate." },
+        warn: { fr: "Sans 'En transparence', les os sont souvent cachés à l'intérieur du personnage.", en: "Without 'In Front', bones are often hidden inside the character." },
+        ok: { fr: "Les os restent visibles même derrière le maillage du personnage.", en: "Bones stay visible even behind the character's mesh." },
+      },
+    ],
+  },
+  {
+    section: { fr: "Construire le squelette", en: "Build the bone chain" },
+    steps: [
+      {
+        id: "s5",
+        title: { fr: "Extruder la colonne vertébrale (bassin → torse → cou → tête)", en: "Extrude the spine (pelvis → chest → neck → head)" },
+        loc: { fr: "Mode Édition de l'armature — sélectionner la pointe de l'os — E pour extruder, répéter vers le haut", en: "Armature Edit Mode — select the bone tip — E to extrude, repeat upward" },
+        why: { fr: "Chaque extrusion crée automatiquement un lien parent-enfant, indispensable pour l'animation.", en: "Each extrusion automatically creates a parent-child link, essential for animation." },
+        warn: { fr: "Ne pas ajouter d'os isolés (Maj+A) pour la colonne : ils ne seraient pas reliés hiérarchiquement.", en: "Don't add isolated bones (Shift+A) for the spine: they wouldn't be linked hierarchically." },
+        ok: { fr: "La chaîne d'os suit la colonne vertébrale sans interruption visuelle.", en: "The bone chain follows the spine without visual gaps." },
+      },
+      {
+        id: "s6",
+        title: { fr: "Extruder un bras complet depuis l'épaule (bras → avant-bras → main)", en: "Extrude a full arm from the shoulder (upper arm → forearm → hand)" },
+        loc: { fr: "Sélectionner l'os du torse au niveau de l'épaule — E pour extruder vers l'épaule, puis le coude, puis la main", en: "Select the chest bone at shoulder height — E to extrude to the shoulder, then elbow, then hand" },
+        why: { fr: "Faire un seul côté d'abord permet de le dupliquer en miroir ensuite, plus rapide et symétrique.", en: "Doing one side first lets you mirror it afterward — faster and perfectly symmetrical." },
+        warn: { fr: "Fais un seul bras pour l'instant (ex: le gauche) — l'autre sera généré automatiquement à l'étape suivante.", en: "Do only one arm for now (e.g. the left) — the other will be generated automatically in the next step." },
+        ok: { fr: "Le bras suit correctement les articulations épaule/coude/poignet du maillage.", en: "The arm correctly follows the shoulder/elbow/wrist joints of the mesh." },
+      },
+      {
+        id: "s7",
+        title: { fr: "Extruder une jambe complète depuis le bassin (cuisse → tibia → pied)", en: "Extrude a full leg from the pelvis (thigh → shin → foot)" },
+        loc: { fr: "Sélectionner l'os du bassin — E pour extruder vers la hanche, le genou, puis le pied", en: "Select the pelvis bone — E to extrude to the hip, knee, then foot" },
+        why: { fr: "Même logique que le bras : une jambe suffit avant la symétrisation.", en: "Same logic as the arm: one leg is enough before symmetrizing." },
+        warn: { fr: "Vérifie que l'os du pied pointe bien vers l'avant, pas vers le bas.", en: "Check that the foot bone points forward, not downward." },
+        ok: { fr: "La jambe suit hanche/genou/cheville du personnage en vue de côté.", en: "The leg follows hip/knee/ankle of the character from the side view." },
+      },
+      {
+        id: "s8",
+        title: { fr: "Renommer chaque os clairement", en: "Rename every bone clearly" },
+        loc: { fr: "Panneau N > onglet Élément > champ Nom (ou double-clic sur l'os dans l'Outliner)", en: "N panel > Item tab > Name field (or double-click the bone in the Outliner)" },
+        why: { fr: "Des noms clairs (spine, upper_arm.L, thigh.L…) sont indispensables pour le pose mode et l'animation.", en: "Clear names (spine, upper_arm.L, thigh.L…) are essential for pose mode and animation." },
+        warn: { fr: "Le suffixe .L / .R est obligatoire sur les os latéraux pour que la symétrisation fonctionne.", en: "The .L / .R suffix is mandatory on side bones for symmetrize to work." },
+        ok: { fr: "Chaque os a un nom lisible dans l'Outliner, sans 'Bone.001', 'Bone.002'...", en: "Every bone has a readable name in the Outliner, no 'Bone.001', 'Bone.002'..." },
+      },
+    ],
+  },
+  {
+    section: { fr: "Symétriser le squelette", en: "Symmetrize the skeleton" },
+    steps: [
+      {
+        id: "s9",
+        title: { fr: "Générer automatiquement le côté opposé (bras et jambe droits)", en: "Automatically generate the opposite side (right arm and leg)" },
+        loc: { fr: "Mode Édition, tout sélectionné (A) — Armature > Symétriser", en: "Edit Mode, everything selected (A) — Armature > Symmetrize" },
+        why: { fr: "Évite de refaire tout le travail manuellement et garantit une symétrie parfaite.", en: "Avoids redoing the work manually and guarantees perfect symmetry." },
+        warn: { fr: "Ne fonctionne que si les noms se terminent bien par .L (les os .R sont créés automatiquement).", en: "Only works if names correctly end in .L (the .R bones are created automatically)." },
+        ok: { fr: "Le personnage a maintenant un squelette complet et symétrique des deux côtés.", en: "The character now has a complete, symmetrical skeleton on both sides." },
+      },
+    ],
+  },
+  {
+    section: { fr: "Parenter l'armature au personnage", en: "Parent the armature to the character" },
+    steps: [
+      {
+        id: "s10",
+        title: { fr: "Sélectionner le maillage puis l'armature, et parenter avec poids automatiques", en: "Select the mesh then the armature, and parent with automatic weights" },
+        loc: { fr: "Mode Objet — clic sur le maillage, Maj+clic sur l'armature — Ctrl+P > Avec poids automatiques", en: "Object Mode — click the mesh, Shift+click the armature — Ctrl+P > With Automatic Weights" },
+        why: { fr: "Blender calcule seul quelle partie du maillage bouge avec quel os, en fonction de la distance.", en: "Blender automatically calculates which mesh part moves with which bone, based on distance." },
+        warn: { fr: "L'ordre de sélection compte : l'armature doit être sélectionnée EN DERNIER (objet actif).", en: "Selection order matters: the armature must be selected LAST (active object)." },
+        ok: { fr: "L'armature apparaît comme 'parent' du maillage dans l'Outliner, avec un modificateur Armature ajouté.", en: "The armature appears as the mesh's 'parent' in the Outliner, with an Armature modifier added." },
+      },
+    ],
+  },
+  {
+    section: { fr: "Vérifier les poids (Weight Paint)", en: "Check the weights (Weight Paint)" },
+    steps: [
+      {
+        id: "s11",
+        title: { fr: "Inspecter les zones d'influence de chaque os", en: "Inspect each bone's influence zones" },
+        loc: { fr: "Sélectionner le maillage — Mode Peinture de poids — sélectionner un os en Pose Mode dans une autre fenêtre pour voir sa zone", en: "Select the mesh — Weight Paint Mode — select a bone in Pose Mode in another window to see its zone" },
+        why: { fr: "Le bleu = aucune influence, le rouge = influence totale : ça révèle les erreurs de déformation avant l'animation.", en: "Blue = no influence, red = full influence: this reveals deformation errors before animating." },
+        warn: { fr: "Aux articulations (épaule, genou), un dégradé trop brutal donne un effet 'papier plié' en mouvement.", en: "At joints (shoulder, knee), too sharp a gradient causes a 'paper fold' effect when moving." },
+        ok: { fr: "Chaque zone du corps a une couleur cohérente avec l'os qui la contrôle, sans zones grises isolées.", en: "Every body area has a color consistent with the bone controlling it, no isolated grey patches." },
+      },
+    ],
+  },
+  {
+    section: { fr: "Tester en Pose Mode", en: "Test in Pose Mode" },
+    steps: [
+      {
+        id: "s12",
+        title: { fr: "Faire pivoter quelques os pour vérifier la déformation", en: "Rotate a few bones to check the deformation" },
+        loc: { fr: "Sélectionner l'armature — Mode Pose — sélectionner un os — R pour pivoter", en: "Select the armature — Pose Mode — select a bone — R to rotate" },
+        why: { fr: "C'est le seul vrai test : un rig qui a l'air bon en Edit Mode peut mal se déformer en mouvement.", en: "This is the real test: a rig that looks fine in Edit Mode can deform badly in motion." },
+        warn: { fr: "Effet 'bonbon écrasé' au coude ou au genou = les poids doivent être corrigés à cet endroit.", en: "'Candy wrapper' effect at the elbow or knee = weights need fixing there." },
+        ok: { fr: "Bras et jambes se plient naturellement, sans trou ni pincement extrême dans le maillage.", en: "Arms and legs bend naturally, with no gaps or extreme pinching in the mesh." },
+      },
+      {
+        id: "s13",
+        title: { fr: "Remettre l'armature en position de repos avant de sauvegarder", en: "Reset the armature to rest position before saving" },
+        loc: { fr: "Mode Pose — tout sélectionner (A) — Alt+R (rotation) puis Alt+G (position) pour effacer la pose de test", en: "Pose Mode — select all (A) — Alt+R (rotation) then Alt+G (location) to clear the test pose" },
+        why: { fr: "Sauvegarder en pleine pose de test fausse le point de départ pour l'animation.", en: "Saving mid test-pose distorts the starting point for animation." },
+        warn: { fr: "Oublier cette étape est l'erreur la plus fréquente avant l'animation.", en: "Forgetting this step is the most common mistake before animating." },
+        ok: { fr: "Le personnage est revenu à sa pose neutre de départ (T-pose ou A-pose).", en: "The character is back to its original neutral pose (T-pose or A-pose)." },
+      },
+    ],
+  },
+];
+
+const LANG_LABELS = {
+  loc: { fr: "📍 Où :", en: "📍 Where:" },
+  why: { fr: "💡 Pourquoi :", en: "💡 Why:" },
+  warn: { fr: "⚠️ Attention :", en: "⚠️ Watch out:" },
+  ok: { fr: "✅ Signe que c'est bon :", en: "✅ Sign it worked:" },
+};
+
+let lang = "fr";
+const STORAGE_KEY = "blender-checklist-armature-v1";
+
+function loadState(){
+  try{
+    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+  }catch(e){ return {}; }
+}
+function saveState(state){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function render(){
+  const main = document.getElementById('main');
+  main.innerHTML = "";
+  const state = loadState();
+  let total = 0, done = 0;
+
+  DATA.forEach((sec, sIdx) => {
+    const secEl = document.createElement('div');
+    secEl.className = 'section';
+
+    const titleEl = document.createElement('div');
+    titleEl.className = 'section-title';
+    titleEl.innerHTML = `<span class="section-num">${sIdx+1}</span><span>${sec.section[lang]}</span>`;
+    secEl.appendChild(titleEl);
+
+    sec.steps.forEach(step => {
+      total++;
+      const checked = !!state[step.id];
+      if(checked) done++;
+
+      const stepEl = document.createElement('div');
+      stepEl.className = 'step' + (checked ? ' done' : '');
+
+      const head = document.createElement('div');
+      head.className = 'step-head';
+      head.onclick = (e) => {
+        if(e.target.tagName.toLowerCase() !== 'input'){
+          cb.checked = !cb.checked;
+          cb.dispatchEvent(new Event('change'));
+        }
+      };
+
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = checked;
+      cb.addEventListener('click', (e) => e.stopPropagation());
+      cb.addEventListener('change', () => {
+        const s = loadState();
+        s[step.id] = cb.checked;
+        saveState(s);
+        render();
+      });
+
+      const titleSpan = document.createElement('span');
+      titleSpan.className = 'step-title';
+      titleSpan.textContent = step.title[lang];
+
+      head.appendChild(cb);
+      head.appendChild(titleSpan);
+      stepEl.appendChild(head);
+
+      const body = document.createElement('div');
+      body.className = 'step-body';
+      ['loc','why','warn','ok'].forEach(key => {
+        const note = document.createElement('div');
+        note.className = 'note ' + key;
+        note.innerHTML = `<span class="tag">${LANG_LABELS[key][lang]}</span><span>${step[key][lang]}</span>`;
+        body.appendChild(note);
+      });
+      stepEl.appendChild(body);
+
+      secEl.appendChild(stepEl);
+    });
+
+    main.appendChild(secEl);
+  });
+
+  document.getElementById('progressText').textContent = `${done} / ${total}`;
+  document.getElementById('progressFill').style.width = total ? `${(done/total)*100}%` : '0%';
+}
+
+function toggleLang(){
+  lang = lang === 'fr' ? 'en' : 'fr';
+  document.getElementById('langBtn').textContent = lang === 'fr' ? 'EN' : 'FR';
+  document.querySelectorAll('[data-fr]').forEach(el => {
+    el.textContent = el.getAttribute('data-' + lang);
+  });
+  render();
+}
+
+function resetChecklist(){
+  const msg = lang === 'fr'
+    ? "Réinitialiser toute la progression de cette checklist ?"
+    : "Reset all progress on this checklist?";
+  if(confirm(msg)){
+    localStorage.removeItem(STORAGE_KEY);
+    render();
+  }
+}
+
+render();
+</script>
+
+</body>
+</html>
